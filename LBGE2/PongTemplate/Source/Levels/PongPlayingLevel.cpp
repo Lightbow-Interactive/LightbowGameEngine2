@@ -8,6 +8,7 @@ PongPlayingLevel::~PongPlayingLevel()
     delete m_aiPlayer;
     delete m_ball;
     delete m_livesText;
+    delete m_scoreText;
 }
 
 void PongPlayingLevel::Init()
@@ -16,6 +17,7 @@ void PongPlayingLevel::Init()
     Level::Init();
 
     m_playerLives = 3;
+    m_score = 0;
 
     Fonts::Add("Poppins", "Resources/Poppins-Medium.ttf");
 
@@ -23,6 +25,11 @@ void PongPlayingLevel::Init()
     m_livesText->SetText("Lives: " + std::to_string(m_playerLives));
     m_livesText->SetTextPosition(10.f,(float)Game::SCREEN_HEIGHT - m_livesText->GetTextHeight()*2);
     m_manager.Add("LivesText", m_livesText);
+
+    m_scoreText = new TextBlock(Fonts::Get("Poppins"), 50);
+    m_scoreText->SetText("Score: " + std::to_string(m_score));
+    m_scoreText->SetTextPosition(10.f, 10.f);
+    m_manager.Add("ScoreText", m_scoreText);
 
     m_player = new Player(false, 0);
     m_manager.Add("Player", m_player);
@@ -34,18 +41,30 @@ void PongPlayingLevel::Init()
     m_manager.Add("AiPlayer", m_aiPlayer);
 }
 
+void PongPlayingLevel::UpdateLevel(float deltaTime)
+{
+    if (m_playerLives >= 0) Level::UpdateLevel(deltaTime);
+}
+
 void PongPlayingLevel::BallDidHitWall()
 {
     if (--m_playerLives < 0)
     {
         // End Game
-        Game::SetLevel(new PongMenuLevel());
+        //Game::SetLevel(new PongMenuLevel());
     }
     else
     {
         m_livesText->SetText("Lives: " + std::to_string(m_playerLives));
         m_livesText->SetTextPosition(10.f,(float)Game::SCREEN_HEIGHT - m_livesText->GetTextHeight()*2);
     }
+}
+
+void PongPlayingLevel::IncreaseScore()
+{
+    ++m_score;
+    m_scoreText->SetText("Score: " + std::to_string(m_score));
+    m_scoreText->SetTextPosition(10.f, 10.f);
 }
 
 

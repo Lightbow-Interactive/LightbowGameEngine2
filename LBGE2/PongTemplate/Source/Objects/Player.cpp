@@ -60,12 +60,12 @@ void Player::Update(float deltaTime)
         float ballY = ball->GetPosition().y;
         float myY = GetPosition().y;
 
-        if (ballY > myY)
+        if (ballY > GetTop())
         {
             if (GetPosition().y+m_speed*deltaTime <= (float)Game::SCREEN_HEIGHT-GetHeight())
                 AddLocalOffset(0, m_speed * deltaTime);
         }
-        if (ballY < myY)
+        if (ballY < GetBottom()-100.f)
         {
             if (GetPosition().y-m_speed*deltaTime >= 0.f)
                 AddLocalOffset(0, -m_speed * deltaTime);

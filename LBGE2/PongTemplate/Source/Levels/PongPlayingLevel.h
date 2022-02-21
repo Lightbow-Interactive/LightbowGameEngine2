@@ -12,9 +12,11 @@ class PongPlayingLevel : public Level
 public:
     ~PongPlayingLevel() override;
     void Init() override;
+    void UpdateLevel(float deltaTime) override;
 
     Ball* GetBall() { return m_ball; }
     void BallDidHitWall();
+    void IncreaseScore();
 
 private:
     Player* m_player;
@@ -22,6 +24,8 @@ private:
     Ball* m_ball;
     int m_playerLives;
     TextBlock* m_livesText;
+    int m_score;
+    TextBlock* m_scoreText;
 
 
 };

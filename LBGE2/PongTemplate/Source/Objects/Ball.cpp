@@ -87,6 +87,9 @@ void Ball::OnCollidesWith(LBGEObject *other)
     Player* playerHit = dynamic_cast<Player*>(other);
     playerHit->UpdateSpeed();
 
+    PongPlayingLevel* level = dynamic_cast<PongPlayingLevel*>(Game::GetLevel());
+    if (level) level->IncreaseScore();
+
     Audio::PlaySound2D(m_bounceSound2);
 }
 
