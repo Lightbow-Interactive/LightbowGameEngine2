@@ -13,9 +13,7 @@ sf::Image Game::m_icon;
 void Game::Start()
 {
     if (m_window.isOpen()) return;
-
-
-
+    
     m_window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32),
                     WINDOW_NAME);
     m_window.setFramerateLimit(FRAMERATE_LIMIT);
@@ -45,6 +43,11 @@ void Game::GameLoop()
         while (m_window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed) m_window.close();
+            if (event.type == sf::Event::Resized)
+            {
+                SCREEN_WIDTH = (int)event.size.width;
+                SCREEN_HEIGHT = (int)event.size.height;
+            }
             m_level->HandleInput(&event);
         }
 
