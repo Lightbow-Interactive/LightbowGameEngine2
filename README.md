@@ -6,7 +6,7 @@ Lightbow Game 2D Open-Source Game Engine built on SFML
 
 ## Engine
 
-### Engine Classes
+### Engine Modules
 
 - LBGE2 currently has 6 modules which can be included.
 
