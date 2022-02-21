@@ -13,7 +13,7 @@ sf::Image Game::m_icon;
 void Game::Start()
 {
     if (m_window.isOpen()) return;
-    
+
     m_window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32),
                     WINDOW_NAME);
     m_window.setFramerateLimit(FRAMERATE_LIMIT);
@@ -34,12 +34,12 @@ void Game::GameLoop()
     {
         if (!m_level) return;
 
-        float elapsedMillis = m_clock.restart().asMilliseconds();
+        float elapsedMillis = (float)m_clock.restart().asMilliseconds();
         float elapsedSeconds = elapsedMillis/1000.f;
 
         m_window.clear(sf::Color::White);
 
-        sf::Event event;
+        sf::Event event{};
         while (m_window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed) m_window.close();
