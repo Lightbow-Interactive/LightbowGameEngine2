@@ -2,18 +2,25 @@
 
 int Game::SCREEN_WIDTH = 1920;
 int Game::SCREEN_HEIGHT = 1080;
+std::string Game::WINDOW_NAME = "Lightbow Game Engine 2";
+int Game::FRAMERATE_LIMIT = 60;
 
 sf::RenderWindow Game::m_window;
 sf::Clock Game::m_clock;
 Level* Game::m_level;
+sf::Image Game::m_icon;
 
 void Game::Start()
 {
     if (m_window.isOpen()) return;
 
+
+
     m_window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32),
-                    "Lightbow Game Engine 2");
-    m_window.setFramerateLimit(60);
+                    WINDOW_NAME);
+    m_window.setFramerateLimit(FRAMERATE_LIMIT);
+    if (m_icon.loadFromFile("Resources/icon.png"))
+        m_window.setIcon(m_icon.getSize().x, m_icon.getSize().y, m_icon.getPixelsPtr());
 
     m_level->Init();
 

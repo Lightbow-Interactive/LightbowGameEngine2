@@ -1,6 +1,12 @@
-#include <iostream>
+#include "LBGECore.h"
+#include "Source/MainLevel.h"
 
-int main() {
-    std::cout << "Hello, World!" << std::endl;
+int main()
+{
+    Game::WINDOW_NAME = "LBGE2 - Blank Template";
+    Game::SetLevel(new MainLevel());
+
+    Game::Start();
+
     return 0;
 }

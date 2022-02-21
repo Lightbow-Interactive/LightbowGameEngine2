@@ -9,6 +9,8 @@ class Game
 public:
     static int SCREEN_WIDTH;
     static int SCREEN_HEIGHT;
+    static std::string WINDOW_NAME;
+    static int FRAMERATE_LIMIT;
 
     static void Start();
     static void GameLoop();
@@ -20,6 +22,7 @@ private:
     static sf::RenderWindow m_window;
     static sf::Clock m_clock;
     static Level* m_level;
+    static sf::Image m_icon;
 
 };
 
