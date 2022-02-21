@@ -1,6 +1,7 @@
 #include "Ball.h"
 #include "LBGECore.h"
 #include "Player.h"
+#include "../Levels/PongPlayingLevel.h"
 #include <cmath>
 
 Ball::Ball() : LBGEObject("Resources/ball.png")
@@ -8,6 +9,15 @@ Ball::Ball() : LBGEObject("Resources/ball.png")
     SetPosition((float)Game::SCREEN_WIDTH/2, (float)Game::SCREEN_HEIGHT/2);
     m_speed = 500.f;
     m_angle = rand() % 180;
+
+    m_bounceSound = new Sound("Resources/ball_sound.wav");
+    m_bounceSound2 = new Sound("Resources/ball_sound2.wav");
+}
+
+Ball::~Ball()
+{
+    delete m_bounceSound;
+    delete m_bounceSound2;
 }
 
 void Ball::Update(float deltaTime)
@@ -25,13 +35,23 @@ void Ball::Update(float deltaTime)
     {
         m_angle = 360 - m_angle;
         velocityY *= -1;
+
+        Audio::PlaySound2D(m_bounceSound);
     }
 
     // Bounce on right and left wall
     if (GetLeft() + velocityX <= 0 || GetRight() + velocityX >= (float)Game::SCREEN_WIDTH)
     {
+        if (GetLeft() + velocityX <= 0)
+        {
+            PongPlayingLevel* level = dynamic_cast<PongPlayingLevel*>(Game::GetLevel());
+            if (level) level->BallDidHitWall();
+        }
+
         m_angle = (180 - m_angle) % 360;
         velocityX *= -1;
+
+        Audio::PlaySound2D(m_bounceSound);
     }
 
     AddLocalOffset(velocityX, velocityY);
@@ -51,8 +71,18 @@ void Ball::OnCollidesWith(LBGEObject *other)
 
     float normalizedDiff = distDiff / maxDiff;
 
-    m_angle = (int)(normalizedDiff * 90);
+    if (other->GetPosition().x < (float)Game::SCREEN_WIDTH / 2)
+        m_angle = (int)(normalizedDiff * 90);
+    else
+        m_angle = 180 - (int)(normalizedDiff * 90);
 
     m_speed += 100.f;
-    if (m_speed > 1800.f) m_speed = 1800.f;
+    if (m_speed > 1800.f) m_speed = 2500.f;
+
+    Player* playerHit = dynamic_cast<Player*>(other);
+    playerHit->UpdateSpeed();
+
+    Audio::PlaySound2D(m_bounceSound2);
 }
+
+

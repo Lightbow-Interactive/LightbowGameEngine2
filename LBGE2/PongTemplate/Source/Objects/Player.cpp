@@ -5,12 +5,12 @@
 #include "../Levels/PongPlayingLevel.h"
 
 
-Player::Player(bool isAiPlayer) : LBGEObject("Resources/paddle.png")
+Player::Player(bool isAiPlayer, int side) : LBGEObject("Resources/paddle.png")
 {
-    isAi = isAiPlayer;
+    m_isAi = isAiPlayer;
 
-    if (!isAi) SetPosition(100.f, (float)Game::SCREEN_HEIGHT/2-GetHeight()/2);
-    else SetPosition((float)Game::SCREEN_WIDTH-100.f, (float)Game::SCREEN_HEIGHT/2-GetHeight()/2);
+    if (side == 0) SetPosition(100.f, (float)Game::SCREEN_HEIGHT/2-GetHeight()/2);
+    if (side == 1) SetPosition((float)Game::SCREEN_WIDTH-100.f, (float)Game::SCREEN_HEIGHT/2-GetHeight()/2);
 }
 
 void Player::HandleInput(KeyEvent *inputEvent)
@@ -34,17 +34,17 @@ void Player::Update(float deltaTime)
 {
     LBGEObject::Update(deltaTime);
 
-    if (!isAi)
+    if (!m_isAi)
     {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
-            if (GetPosition().y-800.f*deltaTime >= 0.f)
-                AddLocalOffset(0, -800.f * deltaTime);
+            if (GetPosition().y-m_speed*deltaTime >= 0.f)
+                AddLocalOffset(0, -m_speed * deltaTime);
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
         {
-            if (GetPosition().y+800.f*deltaTime <= (float)Game::SCREEN_HEIGHT-GetHeight())
-                AddLocalOffset(0, 800.f * deltaTime);
+            if (GetPosition().y+m_speed*deltaTime <= (float)Game::SCREEN_HEIGHT-GetHeight())
+                AddLocalOffset(0, m_speed * deltaTime);
         }
     }
     else
@@ -55,18 +55,24 @@ void Player::Update(float deltaTime)
         Ball* ball = level->GetBall();
         if (!ball) return;
 
+        // Easy AI:
+
         float ballY = ball->GetPosition().y;
         float myY = GetPosition().y;
 
         if (ballY > myY)
         {
-            if (GetPosition().y+800.f*deltaTime <= (float)Game::SCREEN_HEIGHT-GetHeight())
-                AddLocalOffset(0, 800.f * deltaTime);
+            if (GetPosition().y+m_speed*deltaTime <= (float)Game::SCREEN_HEIGHT-GetHeight())
+                AddLocalOffset(0, m_speed * deltaTime);
         }
         if (ballY < myY)
         {
-            if (GetPosition().y-800.f*deltaTime >= 0.f)
-                AddLocalOffset(0, -800.f * deltaTime);
+            if (GetPosition().y-m_speed*deltaTime >= 0.f)
+                AddLocalOffset(0, -m_speed * deltaTime);
         }
+
+        // Hard AI:
+
+        //SetPosition(GetPosition().x, ball->GetPosition().y);
     }
 }

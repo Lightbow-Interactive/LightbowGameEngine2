@@ -10,7 +10,10 @@ set(SOURCE_FILES
         Source/State/GameState.cpp
         Source/Objects/LBGEObject.cpp
         Source/Objects/ObjectManager.cpp
-        Source/UserInterface/Fonts.cpp)
+        Source/UserInterface/Fonts.cpp
+        Source/UserInterface/TextBlock.cpp
+        Source/Audio/Audio.cpp
+        Source/Audio/Sound.cpp)
 
 add_library(Engine STATIC ${SOURCE_FILES})
 

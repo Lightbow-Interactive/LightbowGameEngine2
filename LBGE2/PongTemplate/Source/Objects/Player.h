@@ -6,13 +6,16 @@
 class Player : public LBGEObject
 {
 public:
-    Player(bool isAiPlayer);
+    Player(bool isAiPlayer, int side);
 
     void HandleInput(KeyEvent *inputEvent) override;
     void Update(float deltaTime) override;
 
+    void UpdateSpeed() { m_speed += 100.f; }
+
 private:
-    bool isAi;
+    bool m_isAi;
+    float m_speed = 800.f;
 
 };
 
