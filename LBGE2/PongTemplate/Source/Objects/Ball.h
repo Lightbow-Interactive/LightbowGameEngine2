@@ -18,6 +18,7 @@ private:
     float m_speed;
     Sound* m_bounceSound;
     Sound* m_bounceSound2;
+    Sound* m_ballLostSound;
 
 };
 

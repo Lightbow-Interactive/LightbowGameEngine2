@@ -12,12 +12,14 @@ Ball::Ball() : LBGEObject("Resources/ball.png")
 
     m_bounceSound = new Sound("Resources/ball_sound.wav");
     m_bounceSound2 = new Sound("Resources/ball_sound2.wav");
+    m_ballLostSound = new Sound("Resources/ball_lost.wav");
 }
 
 Ball::~Ball()
 {
     delete m_bounceSound;
     delete m_bounceSound2;
+    delete m_ballLostSound;
 }
 
 void Ball::Update(float deltaTime)
@@ -46,12 +48,15 @@ void Ball::Update(float deltaTime)
         {
             PongPlayingLevel* level = dynamic_cast<PongPlayingLevel*>(Game::GetLevel());
             if (level) level->BallDidHitWall();
+            Audio::PlaySound2D(m_ballLostSound);
+        }
+        else
+        {
+            Audio::PlaySound2D(m_bounceSound);
         }
 
         m_angle = (180 - m_angle) % 360;
         velocityX *= -1;
-
-        Audio::PlaySound2D(m_bounceSound);
     }
 
     AddLocalOffset(velocityX, velocityY);
