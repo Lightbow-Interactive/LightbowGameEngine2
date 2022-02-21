@@ -4,6 +4,7 @@
 #include "SFML/Graphics.hpp"
 #include "../Types/KeyEvent.h"
 #include "../Types/Vector.h"
+#include "../Core/EventDelegate.h"
 
 class LBGEObject
 {
@@ -24,9 +25,14 @@ public:
     Vector2<float> GetPosition();
     float GetWidth() const { return m_sprite.getGlobalBounds().width; }
     float GetHeight() const { return m_sprite.getGlobalBounds().height; }
+    sf::Sprite* GetSprite() { return &m_sprite; }
+    float GetTop();
+    float GetRight();
+    float GetBottom();
+    float GetLeft();
 
     virtual void OnCollidesWith(LBGEObject* other) {}
-    virtual void OnClickOnObject() {}
+    EventDelegate OnMouseClickOnObject;
 
 protected:
     sf::Texture m_texture;

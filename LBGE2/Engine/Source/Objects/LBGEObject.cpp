@@ -46,3 +46,23 @@ void LBGEObject::SetPosition(float x, float y)
 {
     m_sprite.setPosition(x, y);
 }
+
+float LBGEObject::GetTop()
+{
+    return m_sprite.getGlobalBounds().top;
+}
+
+float LBGEObject::GetRight()
+{
+    return m_sprite.getGlobalBounds().left + m_sprite.getGlobalBounds().width;
+}
+
+float LBGEObject::GetBottom()
+{
+    return m_sprite.getGlobalBounds().top + m_sprite.getGlobalBounds().height;
+}
+
+float LBGEObject::GetLeft()
+{
+    return m_sprite.getGlobalBounds().left;
+}

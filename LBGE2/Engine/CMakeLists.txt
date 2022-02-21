@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(SOURCE_FILES
         Source/Core/Game.cpp
         Source/Core/Level.cpp
+        Source/Core/EventDelegate.cpp
         Source/State/GameState.cpp
         Source/Objects/LBGEObject.cpp
         Source/Objects/ObjectManager.cpp

@@ -27,6 +27,8 @@ void Game::GameLoop()
 {
     while (m_window.isOpen())
     {
+        if (!m_level) return;
+
         float elapsedMillis = m_clock.restart().asMilliseconds();
         float elapsedSeconds = elapsedMillis/1000.f;
 
@@ -39,6 +41,8 @@ void Game::GameLoop()
             m_level->HandleInput(&event);
         }
 
+        m_level->UpdateLevel(elapsedSeconds);
+
         m_level->RenderLevel(&m_window);
 
         m_window.display();
@@ -48,6 +52,7 @@ void Game::GameLoop()
 void Game::SetLevel(Level *level)
 {
     m_level = level;
+    if (m_level) m_level->Init();
 }
 
 Level *Game::GetLevel()

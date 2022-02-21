@@ -60,6 +60,13 @@ void ObjectManager::HandleInputAll(sf::Event *event)
     while (itr != m_objects.end())
     {
         itr->second->HandleInput(&inputEvent);
+        if (inputEvent.type == MouseClick)
+        {
+            if (itr->second->GetSprite()->getGlobalBounds().contains(inputEvent.location.x, inputEvent.location.y))
+            {
+                itr->second->OnMouseClickOnObject.Invoke();
+            }
+        }
         itr++;
     }
 }
@@ -71,6 +78,29 @@ void ObjectManager::UpdateAll(float deltaTime)
     {
         itr->second->Update(deltaTime);
         itr++;
+    }
+
+    // Detect Collision:
+
+    auto originItr = m_objects.begin();
+    while (originItr != m_objects.end())
+    {
+        sf::Rect<float> originBounds = originItr->second->GetSprite()->getGlobalBounds();
+
+        auto targetItr = m_objects.begin();
+        while (targetItr != m_objects.end())
+        {
+            sf::Rect<float> otherBounds = targetItr->second->GetSprite()->getGlobalBounds();
+
+            if (originBounds.intersects(otherBounds))
+            {
+                originItr->second->OnCollidesWith(targetItr->second);
+            }
+
+            targetItr++;
+        }
+
+        originItr++;
     }
 }
 
