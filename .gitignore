@@ -14,3 +14,5 @@ cmake-build-debug
 .idea
 .vs
 .vscode
+
+.DS_Store
