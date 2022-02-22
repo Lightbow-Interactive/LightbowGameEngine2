@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
-project(Engine)
+project(Engine CXX)
 
-set(CMAKE_CXX_STANDARD 23)
+find_package(SFML 2.5.1 REQUIRED COMPONENTS audio network graphics window system)
 
 set(SOURCE_FILES
         Source/Core/Game.cpp
@@ -16,8 +16,8 @@ set(SOURCE_FILES
         Source/Audio/Sound.cpp)
 
 add_library(Engine STATIC ${SOURCE_FILES})
-
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake-modules")
+target_link_libraries(Engine PUBLIC sfml-system sfml-window sfml-graphics sfml-audio sfml-network)
+target_compile_features(Engine PUBLIC cxx_std_20)
 
 if(WIN32)
     set(SFML_ROOT C:/Libs/SFML)
@@ -26,7 +26,3 @@ if(WIN32)
     file(GLOB BINARY_DEP_DLLS "${SFML_INCLUDE_DIR}/../bin/*.dll")
     file(COPY ${BINARY_DEP_DLLS} DESTINATION ${CMAKE_BINARY_DIR})
 endif()
-
-find_package(SFML REQUIRED audio network graphics)
-target_link_libraries(${PROJECT_NAME} sfml-system sfml-window sfml-graphics sfml-audio sfml-network)
-include_directories(${SFML_INCLUDE_DIRS})
