@@ -2,7 +2,7 @@
 Lightbow Game 2D Open-Source Game Engine built on SFML
 
 - To get a good example have a look at "PongTemplate". This is the Ping Pong game created in LBGE2. 
-- The Blank Template is currently not finished.
+- The Blank Template only contains a Level.
 
 ## Engine
 
