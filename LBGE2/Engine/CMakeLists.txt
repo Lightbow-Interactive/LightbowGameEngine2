@@ -5,9 +5,15 @@ if(WIN32)
     set(SFML_ROOT C:/Libs/SFML)
 endif()
 
+find_package(OpenGL REQUIRED)
 find_package(SFML 2.5.1 REQUIRED COMPONENTS audio network graphics window system)
 
 set(SOURCE_FILES
+        ImGui/imgui.cpp
+        ImGui/imgui_widgets.cpp
+        ImGui/imgui_draw.cpp
+        ImGui/imgui_tables.cpp
+        ImGui/imgui-SFML.cpp
         Source/Core/Game.cpp
         Source/Core/Level.cpp
         Source/Core/EventDelegate.cpp
@@ -20,7 +26,7 @@ set(SOURCE_FILES
         Source/Audio/Sound.cpp)
 
 add_library(Engine STATIC ${SOURCE_FILES})
-target_link_libraries(Engine PUBLIC sfml-system sfml-window sfml-graphics sfml-audio sfml-network)
+target_link_libraries(Engine PUBLIC sfml-system sfml-window sfml-graphics sfml-audio sfml-network ${OPENGL_LIBRARY})
 target_compile_features(Engine PUBLIC cxx_std_20)
 
 if(WIN32)

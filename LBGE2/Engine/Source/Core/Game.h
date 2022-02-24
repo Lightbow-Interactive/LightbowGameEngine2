@@ -23,6 +23,7 @@ private:
     static sf::Clock m_clock;
     static Level* m_level;
     static sf::Image m_icon;
+    static bool m_editor;
 
 };
 
