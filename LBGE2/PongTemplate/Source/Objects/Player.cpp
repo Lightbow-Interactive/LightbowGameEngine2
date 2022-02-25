@@ -9,8 +9,8 @@ Player::Player(bool isAiPlayer, int side) : LBGEObject("Resources/paddle.png")
 {
     m_isAi = isAiPlayer;
 
-    if (side == 0) SetPosition(100.f, (float)Game::SCREEN_HEIGHT/2-GetHeight()/2);
-    if (side == 1) SetPosition((float)Game::SCREEN_WIDTH-100.f, (float)Game::SCREEN_HEIGHT/2-GetHeight()/2);
+    if (side == 0) SetPosition(100.f, (float)Game::HEIGHT / 2 - GetHeight() / 2);
+    if (side == 1) SetPosition((float)Game::WIDTH - 100.f, (float)Game::HEIGHT / 2 - GetHeight() / 2);
 }
 
 void Player::HandleInput(KeyEvent *inputEvent)
@@ -46,8 +46,8 @@ void Player::Update(float deltaTime)
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
         {
             //std::cout << "Player " << GetPosition().y << std::endl;
-            //std::cout << "Screen " << (float)Game::SCREEN_HEIGHT-GetHeight() << std::endl;
-            if (GetPosition().y+m_speed*deltaTime <= (float)Game::SCREEN_HEIGHT-GetHeight())
+            //std::cout << "Screen " << (float)Game::HEIGHT-GetHeight() << std::endl;
+            if (GetPosition().y+m_speed*deltaTime <= (float)Game::HEIGHT - GetHeight())
             {
                 AddLocalOffset(0, m_speed * deltaTime);
             }
@@ -71,7 +71,7 @@ void Player::Update(float deltaTime)
 
         if (ballY > GetTop())
         {
-            if (GetPosition().y+m_speed*deltaTime <= (float)Game::SCREEN_HEIGHT-GetHeight())
+            if (GetPosition().y+m_speed*deltaTime <= (float)Game::HEIGHT - GetHeight())
                 AddLocalOffset(0, m_speed * deltaTime);
         }
         if (ballY < GetBottom()-100.f)

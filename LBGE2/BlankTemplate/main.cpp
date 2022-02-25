@@ -4,9 +4,9 @@
 int main()
 {
     Game::WINDOW_NAME = "LBGE2 - Blank Template";
-    Game::SetLevel(new MainLevel());
+    Game::SetStartupLevel(new MainLevel());
 
-    Game::Start();
+    Game::StartEditor();
 
     return 0;
 }

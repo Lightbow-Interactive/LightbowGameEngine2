@@ -17,7 +17,13 @@ public:
 
 private:
     sf::RenderTexture* m_frameBuffer;
-    int m_dockspaceId;
+
+    void MainLayout();
+    void MainMenuBar();
+    void LevelWindow();
+    void LogWindow();
+    void ViewportWindow();
+    void PropertiesWindow();
 
 };
 

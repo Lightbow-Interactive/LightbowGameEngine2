@@ -6,7 +6,7 @@
 
 Ball::Ball() : LBGEObject("Resources/ball.png")
 {
-    SetPosition((float)Game::SCREEN_WIDTH/2, (float)Game::SCREEN_HEIGHT/2);
+    SetPosition((float)Game::WIDTH / 2, (float)Game::HEIGHT / 2);
     m_speed = 500.f;
     m_angle = rand() % 180;
 
@@ -33,7 +33,7 @@ void Ball::Update(float deltaTime)
     float velocityY = 0 * std::cos(angleRad) + velocity * std::sin(angleRad);
 
     // Bounce on top and bottom walls
-    if (GetTop() + velocityY <= 0 || GetBottom() + velocityY >= (float)Game::SCREEN_HEIGHT)
+    if (GetTop() + velocityY <= 0 || GetBottom() + velocityY >= (float)Game::HEIGHT)
     {
         m_angle = 360 - m_angle;
         velocityY *= -1;
@@ -42,7 +42,7 @@ void Ball::Update(float deltaTime)
     }
 
     // Bounce on right and left wall
-    if (GetLeft() + velocityX <= 0 || GetRight() + velocityX >= (float)Game::SCREEN_WIDTH)
+    if (GetLeft() + velocityX <= 0 || GetRight() + velocityX >= (float)Game::WIDTH)
     {
         if (GetLeft() + velocityX <= 0)
         {
@@ -76,7 +76,7 @@ void Ball::OnCollidesWith(LBGEObject *other)
 
     float normalizedDiff = distDiff / maxDiff;
 
-    if (other->GetPosition().x < (float)Game::SCREEN_WIDTH / 2)
+    if (other->GetPosition().x < (float)Game::WIDTH / 2)
         m_angle = (int)(normalizedDiff * 90);
     else
         m_angle = 180 - (int)(normalizedDiff * 90);

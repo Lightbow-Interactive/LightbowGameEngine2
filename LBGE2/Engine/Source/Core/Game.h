@@ -8,18 +8,23 @@
 class Game
 {
 public:
-    static int SCREEN_WIDTH;
-    static int SCREEN_HEIGHT;
+    static int WIDTH;
+    static int HEIGHT;
     static std::string WINDOW_NAME;
     static int FRAMERATE_LIMIT;
 
     static void Start();
+    static void StartEditor();
     static void GameLoop();
+    static void GameLoopEditor();
 
-    static void SetLevel(Level* level);
+    static void SetStartupLevel(Level* level);
+    static void ChangeLevel(Level* level);
     static Level* GetLevel();
 
     static sf::RenderTexture* GetRenderFrameBuffer() { return &m_frameBuffer; };
+    static void SetGameRunningEditor(bool newVal) { m_editorGameRunning = newVal; }
+    static void ResetGameEditor();
 
 private:
     static sf::RenderWindow m_window;
@@ -27,7 +32,7 @@ private:
     static Level* m_level;
     static sf::Image m_icon;
 
-    static bool m_editor;
+    static bool m_editorGameRunning;
     static ImGuiLayer m_imGuiLayer;
     static sf::RenderTexture m_frameBuffer;
 

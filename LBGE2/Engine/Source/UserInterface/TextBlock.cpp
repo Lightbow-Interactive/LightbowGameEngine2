@@ -11,3 +11,8 @@ void TextBlock::Render(sf::RenderWindow *window)
 {
     window->draw(m_text);
 }
+
+void TextBlock::Render(sf::RenderTexture *rtexture)
+{
+    rtexture->draw(m_text);
+}

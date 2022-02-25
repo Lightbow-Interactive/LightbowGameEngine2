@@ -10,12 +10,16 @@ void ImGuiLayer::Init(sf::RenderWindow& window)
     std::cout << "Initializing Editor..." << std::endl;
 
     m_frameBuffer = Game::GetRenderFrameBuffer();
-    m_dockspaceId = 0;
 
     //ImGui::SFML::Init(window);
     ImGui::SFML::Init(window);
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     ImGui::GetStyle().ScaleAllSizes(2);
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->Clear();
+    io.Fonts->AddFontFromFileTTF("Resources/Poppins-Regular.ttf", 30);
+    ImGui::SFML::UpdateFontTexture();
 }
 
 void ImGuiLayer::ShutDown()
@@ -41,53 +45,140 @@ void ImGuiLayer::Render(sf::RenderWindow& window)
 
 void ImGuiLayer::ProcessGui()
 {
-    /*if (ImGui::Begin("LBGE Editor", nullptr, ImGuiWindowFlags_MenuBar))
+    MainLayout();
+    MainMenuBar();
+    LevelWindow();
+    ViewportWindow();
+    PropertiesWindow();
+    LogWindow();
+}
+
+void ImGuiLayer::MainLayout()
+{
+    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->Pos);
+    ImGui::SetNextWindowSize(viewport->Size);
+    ImGui::SetNextWindowViewport(viewport->ID);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+
+    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+        window_flags |= ImGuiWindowFlags_NoBackground;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("LBGE Editor", nullptr, window_flags);
+    ImGui::PopStyleVar();
+    ImGui::PopStyleVar(2);
+
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
     {
-        ImGui::SetWindowPos(ImVec2(0, 0));
-        ImGui::SetWindowSize(ImVec2((float)Game::SCREEN_WIDTH*2, (float)Game::SCREEN_HEIGHT*2));
+        ImGuiID dockspace_id = ImGui::GetID("DockSpace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 
-        //m_dockspaceId = (int)ImGui::GetID("HUB_DockSpace");
-
-        //ImGui::DockSpace(m_dockspaceId, ImVec2(0, 0), ImGuiDockNodeFlags_None|ImGuiDockNodeFlags_PassthruCentralNode);
-
-        if (ImGui::BeginMenuBar())
+        static auto first_time = true;
+        if (first_time)
         {
-            if (ImGui::BeginMenu("File"))
-            {
-                if (ImGui::MenuItem("New"))
-                {
+            first_time = false;
 
-                }
+            ImGui::DockBuilderRemoveNode(dockspace_id); // clear any previous layout
+            ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
+            ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
+
+            auto dock_id_center = dockspace_id;
+            auto dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left,
+                                                            0.2f, nullptr,
+                                                            &dockspace_id);
+            auto dock_id_right = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right,
+                                                             0.2f, nullptr,
+                                                             &dockspace_id);
+            auto dock_id_down = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down,
+                                                            0.2f, nullptr,
+                                                            &dockspace_id);
+
+            ImGui::DockBuilderDockWindow("Viewport", dock_id_center);
+            ImGui::DockBuilderDockWindow("Level", dock_id_left);
+            ImGui::DockBuilderDockWindow("Properties", dock_id_right);
+            ImGui::DockBuilderDockWindow("Log", dock_id_down);
+            ImGui::DockBuilderFinish(dockspace_id);
+        }
+    }
+    ImGui::End();
+}
+
+void ImGuiLayer::MainMenuBar()
+{
+    ImGui::BeginMainMenuBar();
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("Open ..."))
+            {
+                std::cout << "Open" << std::endl;
+            }
+            if (ImGui::MenuItem("Save"))
+            {
+                std::cout << "Save" << std::endl;
+            }
+            if (ImGui::MenuItem("Close"))
+            {
+                std::cout << "Close" << std::endl;
             }
             ImGui::EndMenu();
         }
-        ImGui::EndMenuBar();
+        if (ImGui::BeginMenu("Game"))
+        {
+            if (ImGui::MenuItem("Start"))
+            {
+                Game::SetGameRunningEditor(true);
+            }
+            if (ImGui::MenuItem("Stop"))
+            {
+                Game::SetGameRunningEditor(false);
+            }
+            if (ImGui::MenuItem("Reset"))
+            {
+                Game::ResetGameEditor();
+            }
+            ImGui::EndMenu();
+        }
     }
-    ImGui::End();*/
+    ImGui::EndMainMenuBar();
+}
 
+void ImGuiLayer::LevelWindow()
+{
+    ImGui::Begin("Level");
+    ImGui::Text("This is the level hierachy");
+    ImGui::End();
+}
 
+void ImGuiLayer::LogWindow()
+{
+    ImGui::Begin("Log");
+    ImGui::Text("This is the log");
+    ImGui::End();
+}
 
-
-    //ImGui::SetNextWindowDockID(m_dockspaceId, ImGuiCond_FirstUseEver);
-    ImGui::Begin("GameWindow");
+void ImGuiLayer::ViewportWindow()
+{
+    ImGui::Begin("Viewport");
     {
         ImGui::BeginChild("GameRenderer");
-        ImGui::Image(*m_frameBuffer, (ImVec2)m_frameBuffer->getSize());
+        if (m_frameBuffer) ImGui::Image(*m_frameBuffer, (ImVec2)m_frameBuffer->getSize());
         ImGui::EndChild();
     }
     ImGui::End();
+}
 
-    //ImGui::SetNextWindowDockID(m_dockspaceId);
-    ImGui::Begin("Level");
-    {
-        ImGui::Text("Hi");
-    }
-    ImGui::End();
-
-    //ImGui::SetNextWindowDockID(m_dockspaceId);
-    ImGui::Begin("Log");
-    {
-        ImGui::Text("Log");
-    }
+void ImGuiLayer::PropertiesWindow()
+{
+    ImGui::Begin("Properties");
+    ImGui::Text("This is the properties panel");
     ImGui::End();
 }

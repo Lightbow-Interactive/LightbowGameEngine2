@@ -1,5 +1,5 @@
-
 #include "MainLevel.h"
+#include <iostream>
 
 void MainLevel::Init()
 {
@@ -14,7 +14,12 @@ void MainLevel::Init()
 
     m_textBlock = new TextBlock(Fonts::Get("Poppins"), 80);
     m_textBlock->SetText("Blank Template");
-    m_textBlock->SetTextPosition((float)Game::SCREEN_WIDTH/2-m_textBlock->GetTextWidth()/2,
-                                 (float)Game::SCREEN_HEIGHT/2-m_textBlock->GetTextHeight()/2);
+
+    std::cout << (float)Game::WIDTH << " / 2 - " << m_textBlock->GetTextWidth() << " / 2 " << std::endl;
+    std::cout << (float)Game::HEIGHT << " / 2 - " << m_textBlock->GetTextHeight() << " / 2 " << std::endl;
+
+    m_textBlock->SetTextPosition((float)Game::WIDTH / 2.f - m_textBlock->GetTextWidth() / 2.f,
+                                 (float)Game::HEIGHT / 2.f - m_textBlock->GetTextHeight() / 2.f);
+
     m_manager.Add("TextBlock1", m_textBlock);
 }

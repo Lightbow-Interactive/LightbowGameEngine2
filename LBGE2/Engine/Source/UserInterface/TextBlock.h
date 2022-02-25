@@ -9,6 +9,7 @@ public:
     TextBlock(sf::Font* font, int size);
 
     void Render(sf::RenderWindow *window) override;
+    void Render(sf::RenderTexture* rtexture) override;
 
     void SetText(const std::string& text) { m_text.setString(text); }
     float GetTextWidth() { return m_text.getGlobalBounds().width; }

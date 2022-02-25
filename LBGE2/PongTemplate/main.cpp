@@ -8,7 +8,7 @@ int main()
     srand(time(NULL));
 
     Game::WINDOW_NAME = "LBGE2 - Pong";
-    Game::SetLevel(new PongMenuLevel());
+    Game::ChangeLevel(new PongMenuLevel());
 
     Game::Start();
 
