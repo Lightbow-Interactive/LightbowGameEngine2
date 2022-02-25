@@ -39,13 +39,22 @@ void Player::Update(float deltaTime)
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
             if (GetPosition().y-m_speed*deltaTime >= 0.f)
+            {
                 AddLocalOffset(0, -m_speed * deltaTime);
+            }
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
         {
+            //std::cout << "Player " << GetPosition().y << std::endl;
+            //std::cout << "Screen " << (float)Game::SCREEN_HEIGHT-GetHeight() << std::endl;
             if (GetPosition().y+m_speed*deltaTime <= (float)Game::SCREEN_HEIGHT-GetHeight())
+            {
                 AddLocalOffset(0, m_speed * deltaTime);
+            }
         }
+
+
+
     }
     else
     {

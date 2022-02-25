@@ -2,6 +2,7 @@
 #include "../../ImGui/imgui.h"
 #include "../../ImGui/imgui-SFML.h"
 #include <iostream>
+#include "../Shader/Shader.h"
 
 int Game::SCREEN_WIDTH = 1920;
 int Game::SCREEN_HEIGHT = 1080;
@@ -17,6 +18,8 @@ bool Game::m_editor = true;
 void Game::Start()
 {
     if (m_window.isOpen()) return;
+
+    Shader::CheckAvail();
 
     m_window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32),
                     WINDOW_NAME);

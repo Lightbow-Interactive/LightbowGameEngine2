@@ -5,6 +5,7 @@
 #include "../Types/KeyEvent.h"
 #include "../Types/Vector.h"
 #include "../Core/EventDelegate.h"
+#include "../Shader/Shader.h"
 
 class LBGEObject
 {
@@ -37,6 +38,7 @@ public:
 protected:
     sf::Texture m_texture;
     sf::Sprite m_sprite;
+    Shader m_shader;
 
 
 

@@ -26,7 +26,8 @@ void LBGEObject::Update(float deltaTime)
 
 void LBGEObject::Render(sf::RenderWindow *window)
 {
-    window->draw(m_sprite);
+    if (Shader::ISAVAIL) window->draw(m_sprite, m_shader.GetShaderRef());
+    else window->draw(m_sprite);
 }
 
 void LBGEObject::AddLocalOffset(float dx, float dy)
