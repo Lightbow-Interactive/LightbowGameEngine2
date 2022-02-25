@@ -1,7 +1,7 @@
 #ifndef LBGE2_OBJECTCOMPONENT_H
 #define LBGE2_OBJECTCOMPONENT_H
 
-#include "../LBGEObject.h"
+class LBGEObject;
 
 class ObjectComponent
 {

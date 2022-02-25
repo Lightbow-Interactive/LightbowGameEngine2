@@ -1,4 +1,5 @@
 #include "ObjectComponent.h"
+#include "../LBGEObject.h"
 
 ObjectComponent::ObjectComponent(LBGEObject *owner)
 {
