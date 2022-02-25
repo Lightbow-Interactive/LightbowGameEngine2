@@ -24,7 +24,8 @@ set(SOURCE_FILES
         Source/UserInterface/TextBlock.cpp
         Source/Audio/Audio.cpp
         Source/Audio/Sound.cpp
-        Source/Shader/Shader.cpp)
+        Source/Shader/Shader.cpp
+        Source/Editor/ImGuiLayer.cpp)
 
 add_library(Engine STATIC ${SOURCE_FILES})
 target_link_libraries(Engine PUBLIC sfml-system sfml-window sfml-graphics sfml-audio sfml-network ${OPENGL_LIBRARY})

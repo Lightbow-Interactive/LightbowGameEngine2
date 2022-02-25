@@ -12,6 +12,7 @@ public:
     virtual void Init();
     virtual void UpdateLevel(float deltaTime);
     virtual void RenderLevel(sf::RenderWindow* window);
+    virtual void RenderLevel(sf::RenderTexture* rtexture);
     virtual void HandleInput(sf::Event* event);
 
     void SetState(GameState* state);

@@ -16,6 +16,7 @@ public:
     virtual void HandleInput(KeyEvent* inputEvent);
     virtual void Update(float deltaTime);
     virtual void Render(sf::RenderWindow* window);
+    virtual void Render(sf::RenderTexture* rtexture);
 
     void AddLocalOffset(float dx, float dy);
     void AddLocalOffset(const Vector2<float>& offset) { AddLocalOffset(offset.x, offset.y); }

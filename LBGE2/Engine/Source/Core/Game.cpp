@@ -1,8 +1,6 @@
 #include "Game.h"
-#include "../../ImGui/imgui.h"
-#include "../../ImGui/imgui-SFML.h"
-#include <iostream>
 #include "../Shader/Shader.h"
+#include <iostream>
 
 int Game::SCREEN_WIDTH = 1920;
 int Game::SCREEN_HEIGHT = 1080;
@@ -13,7 +11,10 @@ sf::RenderWindow Game::m_window;
 sf::Clock Game::m_clock;
 Level* Game::m_level;
 sf::Image Game::m_icon;
+
 bool Game::m_editor = true;
+ImGuiLayer Game::m_imGuiLayer;
+sf::RenderTexture Game::m_frameBuffer;
 
 void Game::Start()
 {
@@ -21,19 +22,30 @@ void Game::Start()
 
     Shader::CheckAvail();
 
-    m_window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32),
-                    WINDOW_NAME);
+    if (m_editor)
+    {
+        m_window.create(sf::VideoMode(SCREEN_WIDTH*2, SCREEN_HEIGHT*2, 32),
+                        WINDOW_NAME + " - Editor");
+        m_frameBuffer.create(SCREEN_WIDTH, SCREEN_HEIGHT);
+    }
+    else
+    {
+        m_window.create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32),
+                        WINDOW_NAME);
+    }
+
     m_window.setFramerateLimit(FRAMERATE_LIMIT);
     if (m_icon.loadFromFile("Resources/icon.png"))
         m_window.setIcon(m_icon.getSize().x, m_icon.getSize().y, m_icon.getPixelsPtr());
 
-    if (m_editor) ImGui::SFML::Init(m_window);
+    if (m_editor) m_imGuiLayer.Init(m_window);
+
 
     m_level->Init();
 
     GameLoop();
 
-    if (m_editor) ImGui::SFML::Shutdown();
+    if (m_editor) m_imGuiLayer.ShutDown();
     delete m_level;
     m_window.close();
 }
@@ -48,12 +60,26 @@ void Game::GameLoop()
         int elapsedMillis = timeElapsed.asMilliseconds();
         float elapsedSeconds = timeElapsed.asSeconds();
 
-        m_window.clear(sf::Color::White);
+        if (m_editor)
+        {
+            m_window.clear(sf::Color::Black);
+            m_frameBuffer.clear(sf::Color::White);
+        }
+        else
+        {
+            m_window.clear(sf::Color::White);
+        }
+
 
         sf::Event event{};
         while (m_window.pollEvent(event))
         {
-            if (m_editor) ImGui::SFML::ProcessEvent(m_window, event);
+            if (m_editor) m_imGuiLayer.OnEvent(m_window, event);
+
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                std::cout << "x = " << event.mouseButton.x << "  y = " << event.mouseButton.y << std::endl;
+            }
 
             if (event.type == sf::Event::Closed) m_window.close();
             if (event.type == sf::Event::Resized)
@@ -64,12 +90,18 @@ void Game::GameLoop()
             m_level->HandleInput(&event);
         }
 
-
         m_level->UpdateLevel(elapsedSeconds);
-        if (m_editor) ImGui::SFML::Update(m_window, timeElapsed);
+        if (m_editor) m_imGuiLayer.Update(m_window, timeElapsed);
 
-        m_level->RenderLevel(&m_window);
-        if (m_editor) ImGui::SFML::Render(m_window);
+        if (m_editor) m_level->RenderLevel(&m_frameBuffer);
+        else m_level->RenderLevel(&m_window);
+
+        if (m_editor)
+        {
+            m_imGuiLayer.ProcessGui();
+        }
+
+        if (m_editor) m_imGuiLayer.Render(m_window);
 
         m_window.display();
     }

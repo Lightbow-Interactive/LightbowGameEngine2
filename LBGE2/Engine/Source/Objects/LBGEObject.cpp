@@ -30,6 +30,12 @@ void LBGEObject::Render(sf::RenderWindow *window)
     else window->draw(m_sprite);
 }
 
+void LBGEObject::Render(sf::RenderTexture *rtexture)
+{
+    if (Shader::ISAVAIL) rtexture->draw(m_sprite, m_shader.GetShaderRef());
+    else rtexture->draw(m_sprite);
+}
+
 void LBGEObject::AddLocalOffset(float dx, float dy)
 {
     SetPosition(GetPosition().x + dx, GetPosition().y + dy);
@@ -67,3 +73,5 @@ float LBGEObject::GetLeft()
 {
     return m_sprite.getGlobalBounds().left;
 }
+
+

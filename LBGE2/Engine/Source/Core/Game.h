@@ -3,6 +3,7 @@
 
 #include "SFML/Graphics.hpp"
 #include "Level.h"
+#include "../Editor/ImGuiLayer.h"
 
 class Game
 {
@@ -18,12 +19,17 @@ public:
     static void SetLevel(Level* level);
     static Level* GetLevel();
 
+    static sf::RenderTexture* GetRenderFrameBuffer() { return &m_frameBuffer; };
+
 private:
     static sf::RenderWindow m_window;
     static sf::Clock m_clock;
     static Level* m_level;
     static sf::Image m_icon;
+
     static bool m_editor;
+    static ImGuiLayer m_imGuiLayer;
+    static sf::RenderTexture m_frameBuffer;
 
 };
 

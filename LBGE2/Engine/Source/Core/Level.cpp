@@ -22,6 +22,11 @@ void Level::RenderLevel(sf::RenderWindow *window)
     m_manager.RenderAll(window);
 }
 
+void Level::RenderLevel(sf::RenderTexture *rtexture)
+{
+    m_manager.RenderAll(rtexture);
+}
+
 void Level::HandleInput(sf::Event *event)
 {
     m_state->HandleInput(event);
