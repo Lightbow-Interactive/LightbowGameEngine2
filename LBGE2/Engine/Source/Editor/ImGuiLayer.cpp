@@ -379,6 +379,29 @@ void ImGuiLayer::PropertiesWindow()
 
         if (ImGui::TreeNode("Components"))
         {
+            std::map<std::string, ObjectComponent*>* components = m_selectedObject->GetComponents();
+            if (components)
+            {
+                auto itr = components->begin();
+                while (itr != components->end())
+                {
+                    ImGui::Selectable(itr->first.c_str());
+                    if (ImGui::BeginPopupContextItem("ComponentContextItem"))
+                    {
+                        if (ImGui::Selectable("Delete"))
+                        {
+                            m_selectedObject->RemoveComponent(itr->first);
+                        }
+                        ImGui::EndPopup();
+                    }
+                    itr++;
+                }
+            }
+            else
+            {
+                ImGui::Text("Failed to load components.");
+            }
+
             ImGui::TreePop();
         }
 

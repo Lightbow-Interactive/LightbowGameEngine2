@@ -78,7 +78,47 @@ float LBGEObject::GetLeft()
 Vector2<float> LBGEObject::GetScale()
 {
     sf::Vector2<float> scale = m_sprite.getScale();
-    return Vector2<float>(scale.x, scale.y);
+    return {scale.x, scale.y};
+}
+
+ObjectComponent *LBGEObject::GetComponentByName(const std::string &name)
+{
+    auto found = m_components.find(name);
+    if (found != m_components.end())
+    {
+        return found->second;
+    }
+    return nullptr;
+}
+
+void LBGEObject::InitComponents()
+{
+    auto itr = m_components.begin();
+    while (itr != m_components.end())
+    {
+        itr->second->Init();
+        itr++;
+    }
+}
+
+void LBGEObject::UpdateComponents(float deltaTime)
+{
+    auto itr = m_components.begin();
+    while (itr != m_components.end())
+    {
+        itr->second->UpdateComponent(deltaTime);
+        itr++;
+    }
+}
+
+void LBGEObject::RemoveComponent(const std::string &name)
+{
+    auto found = m_components.find(name);
+    if (found != m_components.end())
+    {
+        delete found->second;
+        m_components.erase(found);
+    }
 }
 
 

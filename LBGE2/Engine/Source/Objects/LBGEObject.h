@@ -6,6 +6,7 @@
 #include "../Types/Vector.h"
 #include "../Core/EventDelegate.h"
 #include "../Shader/Shader.h"
+#include "Components/ObjectComponent.h"
 
 class LBGEObject
 {
@@ -36,6 +37,31 @@ public:
     void SetRotation(float newRot) { m_sprite.setRotation(newRot); }
     Vector2<float> GetScale();
 
+    ObjectComponent* GetComponentByName(const std::string& name);
+    std::map<std::string, ObjectComponent*>* GetComponents() { return &m_components; }
+    void RemoveComponent(const std::string& name);
+
+
+    template<typename T>
+    void CreateComponent(const std::string& name)
+    {
+        ObjectComponent* component = new T(this);
+        if (!component) return;
+        m_components.insert(std::pair<std::string, ObjectComponent*>(name, component));
+    }
+
+    template<typename T>
+    T* GetComponentByName(const std::string& name)
+    {
+        auto found = m_components.find(name);
+        if (found != m_components.end())
+        {
+            T* component = dynamic_cast<T*>(found->second);
+            if (component) return component;
+        }
+        return nullptr;
+    }
+
     virtual void OnCollidesWith(LBGEObject* other) {}
     EventDelegate OnMouseClickOnObject;
 
@@ -44,7 +70,12 @@ protected:
     sf::Sprite m_sprite;
     Shader m_shader;
 
+    void InitComponents();
 
+private:
+    std::map<std::string, ObjectComponent*> m_components;
+
+    void UpdateComponents(float deltaTime);
 
 };
 

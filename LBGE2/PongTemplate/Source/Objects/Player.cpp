@@ -11,6 +11,10 @@ Player::Player(bool isAiPlayer, int side) : LBGEObject("Resources/paddle.png")
 
     if (side == 0) SetPosition(100.f, (float)Game::HEIGHT / 2 - GetHeight() / 2);
     if (side == 1) SetPosition((float)Game::WIDTH - 100.f, (float)Game::HEIGHT / 2 - GetHeight() / 2);
+
+    CreateComponent<ObjectComponent>("MyTestComponent");
+
+    InitComponents();
 }
 
 void Player::HandleInput(KeyEvent *inputEvent)
