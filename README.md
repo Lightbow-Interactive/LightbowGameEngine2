@@ -63,6 +63,14 @@ Lightbow Game 2D Open-Source Game Engine built on SFML
 | Fonts     | Static class to load and manage fonts.                       |
 | TextBlock | A text block which can be added to the object manager in your level. It can display text. |
 
+#### LBGEShader
+
+#include "LBGEShader.h"
+
+| Class  | Description                                                  |
+| ------ | ------------------------------------------------------------ |
+| Shader | Used to load shaders. Every LBGEObject has a shader (m_shader) which is automatically rendered. |
+
 ## Installation
 
 ### Installation with Engine Source
