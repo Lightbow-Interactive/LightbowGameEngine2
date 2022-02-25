@@ -18,6 +18,8 @@ public:
     void SetState(GameState* state);
     GameState* GetState();
 
+    std::map<std::string, LBGEObject*>* GetAllObjectsInLevel() { return m_manager.GetAllObjects(); }
+
 protected:
     GameState* m_state;
     ObjectManager m_manager;

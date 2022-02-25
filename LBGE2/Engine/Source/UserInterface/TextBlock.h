@@ -15,6 +15,12 @@ public:
     float GetTextWidth() { return m_text.getGlobalBounds().width; }
     float GetTextHeight() { return m_text.getGlobalBounds().height; }
     void SetTextPosition(float x, float y) { m_text.setPosition(x, y); }
+    std::string GetText() { return m_text.getString().toAnsiString(); }
+    unsigned int GetFontSize() { return m_text.getCharacterSize(); }
+    void SetFontSize(int val) { m_text.setCharacterSize(val); }
+    const sf::Font* GetFont() { return m_text.getFont(); }
+    void SetFont(const std::string& name);
+
 
 private:
     sf::Text m_text;

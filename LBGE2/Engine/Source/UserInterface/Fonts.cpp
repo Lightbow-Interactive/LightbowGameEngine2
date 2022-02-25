@@ -23,3 +23,17 @@ sf::Font *Fonts::Get(const std::string &name)
     }
     return nullptr;
 }
+
+std::string Fonts::GetFontName(sf::Font* font)
+{
+    auto itr = m_fonts.begin();
+    while (itr != m_fonts.end())
+    {
+        if (itr->second == font)
+        {
+            return itr->first;
+        }
+        itr++;
+    }
+    return "";
+}

@@ -32,6 +32,9 @@ public:
     float GetRight();
     float GetBottom();
     float GetLeft();
+    float GetRotation() { return m_sprite.getRotation(); }
+    void SetRotation(float newRot) { m_sprite.setRotation(newRot); }
+    Vector2<float> GetScale();
 
     virtual void OnCollidesWith(LBGEObject* other) {}
     EventDelegate OnMouseClickOnObject;

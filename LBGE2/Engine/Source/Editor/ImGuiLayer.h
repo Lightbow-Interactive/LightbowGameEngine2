@@ -2,6 +2,7 @@
 #define LBGE2_IMGUILAYER_H
 
 #include "SFML/Graphics.hpp"
+#include "../Objects/LBGEObject.h"
 
 class ImGuiLayer
 {
@@ -17,6 +18,8 @@ public:
 
 private:
     sf::RenderTexture* m_frameBuffer;
+    LBGEObject* m_selectedObject;
+    std::string m_selectedObjectName;
 
     void MainLayout();
     void MainMenuBar();

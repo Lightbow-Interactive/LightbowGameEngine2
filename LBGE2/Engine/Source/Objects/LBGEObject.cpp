@@ -75,4 +75,10 @@ float LBGEObject::GetLeft()
     return m_sprite.getGlobalBounds().left;
 }
 
+Vector2<float> LBGEObject::GetScale()
+{
+    sf::Vector2<float> scale = m_sprite.getScale();
+    return Vector2<float>(scale.x, scale.y);
+}
+
 

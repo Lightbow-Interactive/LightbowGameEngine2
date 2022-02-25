@@ -9,6 +9,7 @@ public:
     static void Add(const std::string& name, const std::string& file);
     static void Remove(const std::string& name);
     static sf::Font* Get(const std::string& name);
+    static std::string GetFontName(sf::Font* font);
 
 private:
     static std::map<std::string, sf::Font*> m_fonts;

@@ -35,7 +35,7 @@ void PongPlayingLevel::Init()
     m_manager.Add("Player", m_player);
 
     m_ball = new Ball();
-    //m_manager.Add("Ball", m_ball);
+    m_manager.Add("Ball", m_ball);
 
     m_aiPlayer = new Player(true, 1);
     m_manager.Add("AiPlayer", m_aiPlayer);

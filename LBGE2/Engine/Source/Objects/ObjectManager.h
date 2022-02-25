@@ -17,6 +17,8 @@ public:
     void RenderAll(sf::RenderWindow* window);
     void RenderAll(sf::RenderTexture* rtexture);
 
+    std::map<std::string, LBGEObject*>* GetAllObjects() { return &m_objects; }
+
 private:
     std::map<std::string, LBGEObject*> m_objects;
 
