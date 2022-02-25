@@ -10,7 +10,7 @@ int main()
     Game::WINDOW_NAME = "LBGE2 - Pong";
     Game::SetStartupLevel(new PongMenuLevel());
 
-    Game::StartEditor();
+    Game::StartGame();
 
     return 0;
 }
