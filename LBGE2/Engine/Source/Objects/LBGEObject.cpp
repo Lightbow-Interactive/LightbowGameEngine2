@@ -78,7 +78,7 @@ float LBGEObject::GetLeft()
 Vector2<float> LBGEObject::GetScale()
 {
     sf::Vector2<float> scale = m_sprite.getScale();
-    return Vector2<float>(scale.x, scale.y);
+    return {scale.x, scale.y};
 }
 
 
