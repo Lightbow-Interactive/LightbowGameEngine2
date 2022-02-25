@@ -12,6 +12,7 @@ public:
     static int HEIGHT;
     static std::string WINDOW_NAME;
     static int FRAMERATE_LIMIT;
+    static int LAST_FPS;
 
     static void Start();
     static void StartEditor();
@@ -24,6 +25,7 @@ public:
 
     static sf::RenderTexture* GetRenderFrameBuffer() { return &m_frameBuffer; };
     static void SetGameRunningEditor(bool newVal) { m_editorGameRunning = newVal; }
+    static bool IsGameRunningEditor() { return m_editorGameRunning; };
     static void ResetGameEditor();
 
 private:

@@ -1,11 +1,12 @@
 #include "LBGEObject.h"
+#include "../Core/Logger.h"
 #include <iostream>
 
 LBGEObject::LBGEObject(const std::string &textureFile)
 {
     if (!m_texture.loadFromFile(textureFile))
     {
-        std::cout << "Unable to load texture ... " << textureFile << std::endl;
+        Logger::Log("Unable to load texture ... " + textureFile);
         return;
     }
     m_sprite.setTexture(m_texture);

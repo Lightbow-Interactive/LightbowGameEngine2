@@ -22,6 +22,7 @@ private:
     void MainMenuBar();
     void LevelWindow();
     void LogWindow();
+    void ContentWindow();
     void ViewportWindow();
     void PropertiesWindow();
 

@@ -1,11 +1,13 @@
 #include "Game.h"
 #include "../Shader/Shader.h"
+#include "Logger.h"
 #include <iostream>
 
 int Game::WIDTH;
 int Game::HEIGHT;
 std::string Game::WINDOW_NAME = "Lightbow Game Engine 2";
 int Game::FRAMERATE_LIMIT = 60;
+int Game::LAST_FPS = 0;
 
 sf::RenderWindow Game::m_window;
 sf::Clock Game::m_clock;
@@ -30,7 +32,7 @@ void Game::Start()
     if (m_icon.loadFromFile("Resources/icon.png"))
         m_window.setIcon(m_icon.getSize().x, m_icon.getSize().y, m_icon.getPixelsPtr());
 
-    std::cout << "width " << WIDTH << " height " << HEIGHT << std::endl;
+    Logger::Log("width " + std::to_string(WIDTH) + " height " + std::to_string(HEIGHT));
 
     m_level->Init();
 
@@ -82,11 +84,6 @@ void Game::GameLoop()
         sf::Event event{};
         while (m_window.pollEvent(event))
         {
-            if (event.type == sf::Event::MouseButtonPressed)
-            {
-                std::cout << "x = " << event.mouseButton.x << "  y = " << event.mouseButton.y << std::endl;
-            }
-
             if (event.type == sf::Event::Closed) m_window.close();
             if (event.type == sf::Event::Resized)
             {
@@ -114,6 +111,7 @@ void Game::GameLoopEditor()
         int elapsedMillis = timeElapsed.asMilliseconds();
         float elapsedSeconds = timeElapsed.asSeconds();
 
+        LAST_FPS = 1000 / elapsedMillis;
 
         m_window.clear(sf::Color::Black);
         m_frameBuffer.clear(sf::Color::White);
@@ -123,11 +121,6 @@ void Game::GameLoopEditor()
         while (m_window.pollEvent(event))
         {
             m_imGuiLayer.OnEvent(m_window, event);
-
-            if (event.type == sf::Event::MouseButtonPressed)
-            {
-                std::cout << "x = " << event.mouseButton.x << "  y = " << event.mouseButton.y << std::endl;
-            }
 
             if (event.type == sf::Event::Closed) m_window.close();
             if (event.type == sf::Event::Resized)

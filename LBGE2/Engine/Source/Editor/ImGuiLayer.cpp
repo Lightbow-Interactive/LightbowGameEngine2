@@ -4,10 +4,11 @@
 #include "../../ImGui/imgui_internal.h"
 #include <iostream>
 #include "../Core/Game.h"
+#include "../Core/Logger.h"
 
 void ImGuiLayer::Init(sf::RenderWindow& window)
 {
-    std::cout << "Initializing Editor..." << std::endl;
+    Logger::Log("Initializing editor...");
 
     m_frameBuffer = Game::GetRenderFrameBuffer();
 
@@ -51,6 +52,7 @@ void ImGuiLayer::ProcessGui()
     ViewportWindow();
     PropertiesWindow();
     LogWindow();
+    ContentWindow();
 }
 
 void ImGuiLayer::MainLayout()
@@ -105,6 +107,7 @@ void ImGuiLayer::MainLayout()
             ImGui::DockBuilderDockWindow("Level", dock_id_left);
             ImGui::DockBuilderDockWindow("Properties", dock_id_right);
             ImGui::DockBuilderDockWindow("Log", dock_id_down);
+            ImGui::DockBuilderDockWindow("Content", dock_id_down);
             ImGui::DockBuilderFinish(dockspace_id);
         }
     }
@@ -147,6 +150,13 @@ void ImGuiLayer::MainMenuBar()
             }
             ImGui::EndMenu();
         }
+
+        ImGui::SetCursorPosX(ImGui::GetWindowWidth()-85);
+        ImGui::Text("FPS: %d", Game::LAST_FPS);
+
+        ImGui::SetCursorPosX(ImGui::GetWindowWidth()-200);
+        if (Game::IsGameRunningEditor()) ImGui::Text("Running");
+        else ImGui::Text("Paused");
     }
     ImGui::EndMainMenuBar();
 }
@@ -161,9 +171,17 @@ void ImGuiLayer::LevelWindow()
 void ImGuiLayer::LogWindow()
 {
     ImGui::Begin("Log");
-    ImGui::Text("This is the log");
+    ImGui::Text("%s", Logger::GetLog().c_str());
     ImGui::End();
 }
+
+void ImGuiLayer::ContentWindow()
+{
+    ImGui::Begin("Content");
+    ImGui::Text("This is the content window");
+    ImGui::End();
+}
+
 
 void ImGuiLayer::ViewportWindow()
 {
@@ -182,3 +200,4 @@ void ImGuiLayer::PropertiesWindow()
     ImGui::Text("This is the properties panel");
     ImGui::End();
 }
+

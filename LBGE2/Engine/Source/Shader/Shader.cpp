@@ -1,4 +1,5 @@
 #include "Shader.h"
+#include "../Core/Logger.h"
 #include <iostream>
 
 bool Shader::ISAVAIL = true;
@@ -38,6 +39,6 @@ void Shader::CheckAvail()
     if (!sf::Shader::isAvailable())
     {
         ISAVAIL = false;
-        std::cout << "Shaders are not available on this system." << std::endl;
+        Logger::Error("Shaders are not available on this system.");
     }
 }
