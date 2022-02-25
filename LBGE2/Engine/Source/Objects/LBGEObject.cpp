@@ -1,11 +1,12 @@
 #include "LBGEObject.h"
+#include "../Core/Logger.h"
 #include <iostream>
 
 LBGEObject::LBGEObject(const std::string &textureFile)
 {
     if (!m_texture.loadFromFile(textureFile))
     {
-        std::cout << "Unable to load texture ... " << textureFile << std::endl;
+        Logger::Log("Unable to load texture ... " + textureFile);
         return;
     }
     m_sprite.setTexture(m_texture);
@@ -28,6 +29,12 @@ void LBGEObject::Render(sf::RenderWindow *window)
 {
     if (Shader::ISAVAIL) window->draw(m_sprite, m_shader.GetShaderRef());
     else window->draw(m_sprite);
+}
+
+void LBGEObject::Render(sf::RenderTexture *rtexture)
+{
+    if (Shader::ISAVAIL) rtexture->draw(m_sprite, m_shader.GetShaderRef());
+    else rtexture->draw(m_sprite);
 }
 
 void LBGEObject::AddLocalOffset(float dx, float dy)
@@ -67,3 +74,11 @@ float LBGEObject::GetLeft()
 {
     return m_sprite.getGlobalBounds().left;
 }
+
+Vector2<float> LBGEObject::GetScale()
+{
+    sf::Vector2<float> scale = m_sprite.getScale();
+    return Vector2<float>(scale.x, scale.y);
+}
+
+

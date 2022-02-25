@@ -12,10 +12,13 @@ public:
     virtual void Init();
     virtual void UpdateLevel(float deltaTime);
     virtual void RenderLevel(sf::RenderWindow* window);
+    virtual void RenderLevel(sf::RenderTexture* rtexture);
     virtual void HandleInput(sf::Event* event);
 
     void SetState(GameState* state);
     GameState* GetState();
+
+    std::map<std::string, LBGEObject*>* GetAllObjectsInLevel() { return m_manager.GetAllObjects(); }
 
 protected:
     GameState* m_state;

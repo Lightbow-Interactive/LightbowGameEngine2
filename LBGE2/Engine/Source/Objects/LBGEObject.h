@@ -16,6 +16,7 @@ public:
     virtual void HandleInput(KeyEvent* inputEvent);
     virtual void Update(float deltaTime);
     virtual void Render(sf::RenderWindow* window);
+    virtual void Render(sf::RenderTexture* rtexture);
 
     void AddLocalOffset(float dx, float dy);
     void AddLocalOffset(const Vector2<float>& offset) { AddLocalOffset(offset.x, offset.y); }
@@ -31,6 +32,9 @@ public:
     float GetRight();
     float GetBottom();
     float GetLeft();
+    float GetRotation() { return m_sprite.getRotation(); }
+    void SetRotation(float newRot) { m_sprite.setRotation(newRot); }
+    Vector2<float> GetScale();
 
     virtual void OnCollidesWith(LBGEObject* other) {}
     EventDelegate OnMouseClickOnObject;

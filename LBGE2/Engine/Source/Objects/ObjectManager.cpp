@@ -113,3 +113,13 @@ void ObjectManager::RenderAll(sf::RenderWindow *window)
         itr++;
     }
 }
+
+void ObjectManager::RenderAll(sf::RenderTexture *rtexture)
+{
+    auto itr = m_objects.begin();
+    while (itr != m_objects.end())
+    {
+        itr->second->Render(rtexture);
+        itr++;
+    }
+}
