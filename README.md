@@ -1,6 +1,7 @@
 # LightbowGameEngine2
 Lightbow Game 2D Open-Source Game Engine built on SFML
 
+- Lightbow Game Engine 2 is a simple and lightweight 2D game engine.
 - To get a good example have a look at "PongTemplate". This is the Ping Pong game created in LBGE2. 
 - The Blank Template only contains a Level.
 
@@ -85,3 +86,12 @@ Lightbow Game 2D Open-Source Game Engine built on SFML
 ### Installation without Engine Source
 
 - A packaged version of the Engine is currently not available, but will be in future.
+
+## Editor
+
+- The editor is currently being worked on.
+- Branch "editor".
+- It will feature a basic level and object editor.
+
+<img width="1440" alt="Bildschirmfoto 2022-02-25 um 21 01 37" src="https://user-images.githubusercontent.com/45181484/155787826-989de926-01b0-4645-ad8f-a95393a7542b.png">
+
