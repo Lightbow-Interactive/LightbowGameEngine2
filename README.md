@@ -93,4 +93,5 @@ Lightbow Game 2D Open-Source Game Engine built on SFML
 - Branch "editor".
 - It will feature a basic level and object editor.
 
-<img width="1438" alt="Bildschirmfoto 2022-02-25 um 15 00 36" src="https://user-images.githubusercontent.com/45181484/155728134-762c54ba-3076-425a-97ae-1e9a585a6784.png">
+<img width="1440" alt="Bildschirmfoto 2022-02-25 um 21 01 37" src="https://user-images.githubusercontent.com/45181484/155787826-989de926-01b0-4645-ad8f-a95393a7542b.png">
+
