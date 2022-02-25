@@ -6,6 +6,7 @@
 #include "../Types/Vector.h"
 #include "../Core/EventDelegate.h"
 #include "../Shader/Shader.h"
+#include "Components/ObjectComponent.h"
 
 class LBGEObject
 {
@@ -44,7 +45,8 @@ protected:
     sf::Sprite m_sprite;
     Shader m_shader;
 
-
+private:
+    std::map<std::string, ObjectComponent*> m_components;
 
 };
 
