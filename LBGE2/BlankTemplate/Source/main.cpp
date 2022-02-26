@@ -1,17 +1,18 @@
 #include "LBGECore.h"
-#include "Source/MainLevel.h"
+#include "MainLevel.h"
 
 int main()
 {
+    Game::FRAMERATE_LIMIT = 120;
     Game::WINDOW_NAME = "LBGE2 - Blank Template";
     Game::SetStartupLevel(new MainLevel());
 
 
     // Start Normal Game:
-    Game::Start();
+    //Game::Start();
     
     // Start Editor:
-    //Game::StartEditor();
+    Game::StartEditor();
 
     return 0;
 }

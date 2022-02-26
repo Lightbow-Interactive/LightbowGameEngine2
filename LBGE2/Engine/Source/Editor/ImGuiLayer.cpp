@@ -1,12 +1,16 @@
 #include "ImGuiLayer.h"
-#include "../../ImGui/imgui.h"
-#include "../../ImGui/imgui-SFML.h"
-#include "../../ImGui/imgui_internal.h"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui-SFML.h"
+#include "ImGui/imgui_internal.h"
 #include <iostream>
 #include "../Core/Game.h"
 #include "../Core/Logger.h"
 #include "../UserInterface/TextBlock.h"
 #include "../UserInterface/Fonts.h"
+#include "../Objects/Components/DefaultComponents/CppScriptComponent.h"
+#include "../Objects/Components/DefaultComponents/LuaScriptComponent.h"
+#include "../Objects/Components/DefaultComponents/PhysicsComponent.h"
+#include "nativefiledialog/include/nfd.h"
 
 void ImGuiLayer::Init(sf::RenderWindow& window)
 {
@@ -51,10 +55,12 @@ void ImGuiLayer::ProcessGui()
     MainLayout();
     MainMenuBar();
     LevelWindow();
-    ViewportWindow();
     PropertiesWindow();
     LogWindow();
     ContentWindow();
+    ViewportWindow();
+
+    if (m_createComponent) CreateComponent();
 }
 
 void ImGuiLayer::MainLayout()
@@ -105,11 +111,11 @@ void ImGuiLayer::MainLayout()
                                                             0.2f, nullptr,
                                                             &dockspace_id);
 
-            ImGui::DockBuilderDockWindow("Viewport", dock_id_center);
             ImGui::DockBuilderDockWindow("Level", dock_id_left);
             ImGui::DockBuilderDockWindow("Properties", dock_id_right);
             ImGui::DockBuilderDockWindow("Log", dock_id_down);
             ImGui::DockBuilderDockWindow("Content", dock_id_down);
+            ImGui::DockBuilderDockWindow("Viewport", dock_id_center);
             ImGui::DockBuilderFinish(dockspace_id);
         }
     }
@@ -122,17 +128,45 @@ void ImGuiLayer::MainMenuBar()
     {
         if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("Open ..."))
+            if (ImGui::MenuItem("Open Level ..."))
             {
                 // todo: open
+
+                nfdchar_t* outPath = NULL;
+                nfdresult_t result = NFD_OpenDialog("lbgelvl", NULL, &outPath);
+
+                if (result == NFD_OKAY)
+                {
+                    m_openedLevelFile = outPath;
+                    delete outPath;
+                    Logger::Log("Opening " + m_openedLevelFile + " ...");
+
+                    Level* newLevel = Level::ConstructLevelFromFile(m_openedLevelFile);
+                    if (newLevel) Game::ChangeLevel(newLevel);
+                    else
+                    {
+                        m_openedLevelFile = "";
+                        Game::ChangeLevel(new Level());
+                        Logger::Error("Failed to load level.");
+                    }
+                }
+                else
+                {
+                    Logger::Log("Open Canceled");
+                }
             }
             if (ImGui::MenuItem("Save"))
             {
-                // todo: save
+                Level* level = Game::GetLevel();
+                if (level)
+                {
+                    level->SaveCurrentLevelToFile(m_openedLevelFile);
+                }
             }
             if (ImGui::MenuItem("Close"))
             {
-                // todo: close
+                m_openedLevelFile = "";
+                Game::ChangeLevel(new Level());
             }
             ImGui::EndMenu();
         }
@@ -146,11 +180,7 @@ void ImGuiLayer::MainMenuBar()
             if (ImGui::MenuItem("Stop"))
             {
                 Game::SetGameRunningEditor(false);
-            }
-            if (ImGui::MenuItem("Reset"))
-            {
-                Game::ResetGameEditor();
-                // todo: reset to startup level
+                // todo: reset level to defaults
             }
             ImGui::EndMenu();
         }
@@ -186,15 +216,24 @@ void ImGuiLayer::MainMenuBar()
             {
                 if (ImGui::MenuItem("Add Component"))
                 {
-                    // todo: add component
+                    m_createComponent = true;
                 }
-                if (ImGui::MenuItem("Duplicate"))
+                if (ImGui::MenuItem("Unselect"))
                 {
-                    // todo: duplicate
+                    m_selectedObjectName = "";
+                    m_selectedObject = nullptr;
                 }
                 if (ImGui::MenuItem("Delete"))
                 {
-                    // todo: delete
+                    Logger::Log("Deleting object " + m_selectedObjectName + "...");
+
+                    Level* level = Game::GetLevel();
+                    if (level)
+                    {
+                        level->DestroyObject(m_selectedObjectName);
+                        m_selectedObjectName = "";
+                        m_selectedObject = nullptr;
+                    }
                 }
 
                 ImGui::EndMenu();
@@ -233,11 +272,13 @@ void ImGuiLayer::LevelWindow()
     auto itr = objectsInLevel->begin();
     while (itr != objectsInLevel->end())
     {
-        if (ImGui::Selectable(itr->first.c_str()))
+        bool isSelected = (itr->first == m_selectedObjectName);
+        if (ImGui::Selectable(itr->first.c_str(), isSelected))
         {
             m_selectedObjectName = itr->first;
             m_selectedObject = itr->second;
         }
+        ImGui::SetItemDefaultFocus();
         itr++;
     }
 
@@ -259,7 +300,6 @@ void ImGuiLayer::ContentWindow()
     ImGui::Text("This is the content window");
     ImGui::End();
 }
-
 
 void ImGuiLayer::ViewportWindow()
 {
@@ -288,13 +328,13 @@ void ImGuiLayer::PropertiesWindow()
             float posX = position.x;
             float posY = position.y;
             ImGui::PushItemWidth(100);
-            if (ImGui::InputFloat("X", &posX))
+            if (ImGui::InputFloat("posX", &posX))
             {
                 position.x = posX;
                 m_selectedObject->SetPosition(position);
             }
             ImGui::SameLine();
-            if (ImGui::InputFloat("Y", &posY))
+            if (ImGui::InputFloat("posY", &posY))
             {
                 position.y = posY;
                 m_selectedObject->SetPosition(position);
@@ -317,13 +357,13 @@ void ImGuiLayer::PropertiesWindow()
             float scaleX = scale.x;
             float scaleY = scale.y;
             ImGui::PushItemWidth(100);
-            if (ImGui::InputFloat("X", &scaleX))
+            if (ImGui::InputFloat("scX", &scaleX))
             {
                 scale.x = scaleX;
                 m_selectedObject->SetScale(scale);
             }
             ImGui::SameLine();
-            if (ImGui::InputFloat("Y", &scaleY))
+            if (ImGui::InputFloat("scY", &scaleY))
             {
                 scale.y = scaleY;
                 m_selectedObject->SetScale(scale);
@@ -335,28 +375,28 @@ void ImGuiLayer::PropertiesWindow()
 
         if (dynamic_cast<TextBlock*>(m_selectedObject))
         {
-            TextBlock* textBlock = static_cast<TextBlock*>(m_selectedObject);
+            TextBlock* textBlock = dynamic_cast<TextBlock*>(m_selectedObject);
 
             if (ImGui::TreeNode("Text Options"))
             {
-                // todo: fix text input
-
                 ImGui::Text("Text: ");
                 ImGui::SameLine();
-
+                ImGui::PushItemWidth(200);
                 char buff[255]{};
                 strcpy(buff, textBlock->GetText().c_str());
-                ImGui::InputText("", buff, IM_ARRAYSIZE(buff));
+                ImGui::InputText("max 255", buff, IM_ARRAYSIZE(buff));
                 {
                     textBlock->SetText(buff);
                 }
+                ImGui::PopItemWidth();
 
                 ImGui::Text("Size:  ");
                 ImGui::SameLine();
                 ImGui::PushItemWidth(200);
                 int fontSize = textBlock->GetFontSize();
-                if (ImGui::InputInt("", &fontSize))
+                if (ImGui::InputInt("px", &fontSize, 1, 10))
                 {
+                    if (fontSize < 1) fontSize = 1;
                     textBlock->SetFontSize(fontSize);
                 }
                 ImGui::PopItemWidth();
@@ -368,10 +408,11 @@ void ImGuiLayer::PropertiesWindow()
                 ImGui::PushItemWidth(200);
                 char fontbuff[255]{};
                 strcpy(buff, Fonts::GetFontName(const_cast<sf::Font *>(textBlock->GetFont())).c_str());
-                if (ImGui::InputText("", fontbuff, IM_ARRAYSIZE(fontbuff)))
+                if (ImGui::InputText("name", fontbuff, IM_ARRAYSIZE(fontbuff)))
                 {
                     textBlock->SetFont(fontbuff);
                 }
+                ImGui::PopItemWidth();
 
                 ImGui::TreePop();
             }
@@ -385,7 +426,26 @@ void ImGuiLayer::PropertiesWindow()
                 auto itr = components->begin();
                 while (itr != components->end())
                 {
-                    ImGui::Selectable(itr->first.c_str());
+                    if (ImGui::TreeNode(itr->first.c_str()))
+                    {
+                        if (dynamic_cast<LuaScriptComponent*>(itr->second))
+                        {
+                            LuaScriptComponent* luaScriptComponent = dynamic_cast<LuaScriptComponent*>(itr->second);
+
+                            ImGui::Text("Script: ");
+                            ImGui::SameLine();
+                            ImGui::PushItemWidth(200);
+                            char scriptNameBuff[255]{};
+                            strcpy(scriptNameBuff, luaScriptComponent->GetScriptName()->c_str());
+                            if (ImGui::InputText("##luaScriptName", scriptNameBuff,
+                                                 IM_ARRAYSIZE(scriptNameBuff)))
+                            {
+                                *luaScriptComponent->GetScriptName() = scriptNameBuff;
+                            }
+                            ImGui::PopItemWidth();
+                        }
+                        ImGui::TreePop();
+                    }
                     if (ImGui::BeginPopupContextItem("ComponentContextItem"))
                     {
                         if (ImGui::Selectable("Delete"))
@@ -410,3 +470,81 @@ void ImGuiLayer::PropertiesWindow()
     ImGui::End();
 }
 
+void ImGuiLayer::CreateComponent()
+{
+    if (!m_selectedObject) return;
+
+    ImGui::Begin("Create Component");
+    {
+        ImGui::Text("Name: ");
+        ImGui::SameLine();
+        char buffName[255]{};
+        if (!m_componentName.empty()) strcpy(buffName, m_componentName.c_str());
+        if (ImGui::InputText("##componentName", buffName, IM_ARRAYSIZE(buffName)))
+        {
+            m_componentName = buffName;
+        }
+
+        ImGui::Text("Type:   ");
+        ImGui::SameLine();
+
+        const char* listbox_items[] = { "C++ Script", "Lua Script", "Physics Component" };
+        int listBoxCurrentSelection = -1;
+        const char* selectedItem = "";
+
+        if (!m_selectedComponentType.empty()) selectedItem = m_selectedComponentType.c_str();
+
+        //ImGui::Indent();
+        //ImGui::ListBox("##listBox1", &listBoxCurrentSelection, listbox_items,
+        //               IM_ARRAYSIZE(listbox_items));
+
+        if (ImGui::BeginCombo("##comboComponent", selectedItem))
+        {
+            for (int i = 0; i < IM_ARRAYSIZE(listbox_items); ++i)
+            {
+                bool isSelected = (selectedItem == listbox_items[i]);
+                if (ImGui::Selectable(listbox_items[i], isSelected)) selectedItem = listbox_items[i];
+                if (isSelected) ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
+        //ImGui::Unindent();
+
+        m_selectedComponentType = selectedItem;
+
+        if (ImGui::Button("Create"))
+        {
+            if (m_selectedComponentType.empty() || m_componentName.empty()) return;
+
+            Logger::Log("Creating component '" + m_componentName + "' of type " + m_selectedComponentType + "...");
+
+            if (m_selectedComponentType == "C++ Script")
+            {
+                m_selectedObject->CreateComponent<CppScriptComponent>(m_componentName);
+            }
+            if (m_selectedComponentType == "Lua Script")
+            {
+                m_selectedObject->CreateComponent<LuaScriptComponent>(m_componentName);
+            }
+            if (m_selectedComponentType == "Physics Component")
+            {
+                m_selectedObject->CreateComponent<PhysicsComponent>(m_componentName);
+            }
+
+            m_selectedComponentType = "";
+            m_componentName = "";
+            m_createComponent = false;
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel"))
+        {
+            m_selectedComponentType = "";
+            m_componentName = "";
+            m_createComponent = false;
+        }
+    }
+    ImGui::End();
+}

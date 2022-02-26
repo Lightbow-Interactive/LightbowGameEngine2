@@ -42,7 +42,7 @@ public:
     void RemoveComponent(const std::string& name);
 
 
-    template<typename T>
+    template<class T>
     void CreateComponent(const std::string& name)
     {
         ObjectComponent* component = new T(this);

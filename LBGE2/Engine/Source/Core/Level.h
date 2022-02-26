@@ -19,6 +19,10 @@ public:
     GameState* GetState();
 
     std::map<std::string, LBGEObject*>* GetAllObjectsInLevel() { return m_manager.GetAllObjects(); }
+    void DestroyObject(const std::string& name) { m_manager.Remove(name); }
+
+    static Level* ConstructLevelFromFile(const std::string& filePath);
+    void SaveCurrentLevelToFile(const std::string& filePath);
 
 protected:
     GameState* m_state;

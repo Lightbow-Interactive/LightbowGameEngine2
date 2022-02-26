@@ -17,6 +17,8 @@ public:
     void ProcessGui();
 
 private:
+    std::string m_openedLevelFile;
+
     sf::RenderTexture* m_frameBuffer;
     LBGEObject* m_selectedObject;
     std::string m_selectedObjectName;
@@ -28,6 +30,11 @@ private:
     void ContentWindow();
     void ViewportWindow();
     void PropertiesWindow();
+
+    bool m_createComponent = false;
+    std::string m_componentName = "";
+    std::string m_selectedComponentType = "";
+    void CreateComponent();
 
 };
 

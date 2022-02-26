@@ -7,6 +7,7 @@ Level::~Level()
 
 void Level::Init()
 {
+    if (!m_state) m_state = new GameState();
     m_state->Init();
 }
 
@@ -41,4 +42,13 @@ void Level::SetState(GameState *state)
 GameState *Level::GetState()
 {
     return m_state;
+}
+
+Level* Level::ConstructLevelFromFile(const std::string& filePath)
+{
+    return nullptr;
+}
+
+void Level::SaveCurrentLevelToFile(const std::string &filePath)
+{
 }
