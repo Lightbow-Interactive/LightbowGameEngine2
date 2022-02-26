@@ -10,6 +10,8 @@ public:
     LuaScriptComponent(LBGEObject* owner);
     std::string* GetScriptName() { return &m_luaScript; }
 
+
+
 private:
     std::string m_luaScript = "";
 

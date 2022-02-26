@@ -12,6 +12,9 @@ Shader::Shader(const std::string &vertexFile, const std::string &fragmentFile)
 
     m_shader.loadFromFile(vertexFile, sf::Shader::Vertex);
     m_shader.loadFromFile(fragmentFile, sf::Shader::Fragment);
+
+    m_fragment = fragmentFile;
+    m_vertex = vertexFile;
 }
 
 void Shader::SetVertex(const std::string &vertexFile)
@@ -19,6 +22,8 @@ void Shader::SetVertex(const std::string &vertexFile)
     if (!ISAVAIL) return;
 
     m_shader.loadFromFile(vertexFile, sf::Shader::Vertex);
+
+    m_vertex = vertexFile;
 }
 
 void Shader::SetFragment(const std::string &fragmentFile)
@@ -26,6 +31,8 @@ void Shader::SetFragment(const std::string &fragmentFile)
     if (!ISAVAIL) return;
 
     m_shader.loadFromFile(fragmentFile, sf::Shader::Fragment);
+
+    m_fragment = fragmentFile;
 }
 
 sf::Shader *Shader::GetShaderRef()

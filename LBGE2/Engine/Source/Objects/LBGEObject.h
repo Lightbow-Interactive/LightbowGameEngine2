@@ -36,6 +36,7 @@ public:
     float GetRotation() { return m_sprite.getRotation(); }
     void SetRotation(float newRot) { m_sprite.setRotation(newRot); }
     Vector2<float> GetScale();
+    void SetEditorDrawOutline(bool drawOutline) { m_editorDrawOutline = drawOutline; }
 
     ObjectComponent* GetComponentByName(const std::string& name);
     std::map<std::string, ObjectComponent*>* GetComponents() { return &m_components; }
@@ -62,6 +63,9 @@ public:
         return nullptr;
     }
 
+    const std::string* GetTextureFile() { return &m_textureFile; }
+    Shader* GetShader() { return &m_shader; }
+
     virtual void OnCollidesWith(LBGEObject* other) {}
     EventDelegate OnMouseClickOnObject;
 
@@ -69,11 +73,13 @@ protected:
     sf::Texture m_texture;
     sf::Sprite m_sprite;
     Shader m_shader;
+    bool m_editorDrawOutline = false;
 
     void InitComponents();
 
 private:
     std::map<std::string, ObjectComponent*> m_components;
+    std::string m_textureFile;
 
     void UpdateComponents(float deltaTime);
 

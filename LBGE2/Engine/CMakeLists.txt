@@ -20,6 +20,7 @@ set(SOURCE_FILES
         Source/Core/Level.cpp
         Source/Core/EventDelegate.cpp
         Source/State/GameState.cpp
+        Source/Objects/SerializedTypes.h
         Source/Objects/LBGEObject.cpp
         Source/Objects/ObjectManager.cpp
         Source/UserInterface/Fonts.cpp

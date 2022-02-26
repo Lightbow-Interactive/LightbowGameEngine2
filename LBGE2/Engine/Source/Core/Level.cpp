@@ -1,4 +1,9 @@
+#include <fstream>
+#include <sstream>
 #include "Level.h"
+#include "Logger.h"
+#include "../Objects/SerializedTypes.h"
+#include "json/json_struct.h"
 
 Level::~Level()
 {
@@ -46,9 +51,41 @@ GameState *Level::GetState()
 
 Level* Level::ConstructLevelFromFile(const std::string& filePath)
 {
+    std::ifstream ifs(filePath);
+    std::stringstream ifbuffer;
+
+    ifbuffer << ifs.rdbuf();
+
+    SerializedLevel thisLevel;
+    JS::ParseContext context(ifbuffer.str());
+
+    context.parseTo(thisLevel);
+
     return nullptr;
 }
 
 void Level::SaveCurrentLevelToFile(const std::string &filePath)
 {
+    Logger::Log("Saving level...");
+
+    std::map<std::string, LBGEObject*>* allObjects = m_manager.GetAllObjects();
+    SerializedLevel thisLevel;
+
+    auto itr = allObjects->begin();
+    while (itr != allObjects->end())
+    {
+        thisLevel.objects.emplace_back(SerializedLBGEObject(itr->first, itr->second));
+        itr++;
+    }
+
+    std::string jsonLevel = JS::serializeStruct(thisLevel);
+
+    std::ofstream ofs;
+    ofs.open(filePath, std::ofstream::out | std::ofstream::trunc);
+
+    ofs << jsonLevel;
+
+    ofs.close();
+
+    Logger::Log("Level saved. (" + filePath + ")");
 }

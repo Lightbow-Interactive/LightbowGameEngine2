@@ -278,6 +278,8 @@ void ImGuiLayer::LevelWindow()
             m_selectedObjectName = itr->first;
             m_selectedObject = itr->second;
         }
+        if (isSelected) itr->second->SetEditorDrawOutline(true);
+        else itr->second->SetEditorDrawOutline(false);
         ImGui::SetItemDefaultFocus();
         itr++;
     }

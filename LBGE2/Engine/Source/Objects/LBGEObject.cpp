@@ -10,6 +10,7 @@ LBGEObject::LBGEObject(const std::string &textureFile)
         return;
     }
     m_sprite.setTexture(m_texture);
+    m_textureFile = textureFile;
 }
 
 LBGEObject::~LBGEObject()
@@ -35,6 +36,11 @@ void LBGEObject::Render(sf::RenderTexture *rtexture)
 {
     if (Shader::ISAVAIL) rtexture->draw(m_sprite, m_shader.GetShaderRef());
     else rtexture->draw(m_sprite);
+
+    if (m_editorDrawOutline)
+    {
+        // todo: draw an outline
+    }
 }
 
 void LBGEObject::AddLocalOffset(float dx, float dy)
@@ -120,5 +126,3 @@ void LBGEObject::RemoveComponent(const std::string &name)
         m_components.erase(found);
     }
 }
-
-

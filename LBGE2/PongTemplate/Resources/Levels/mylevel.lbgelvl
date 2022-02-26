@@ -1,0 +1,23 @@
+{
+    "objects" : [
+        {
+            "name" : "PlayButton",
+            "textureFile" : "Resources/button_play.png",
+            "position" : {
+                "x" : 874.0,
+                "y" : 570.0
+            },
+            "rotation" : 0.0,
+            "scale" : {
+                "x" : 2.0,
+                "y" : 2.0
+            },
+            "shader" : {
+                "vertex" : "",
+                "fragment" : ""
+            },
+            "components" : [
+            ]
+        }
+    ]
+}
