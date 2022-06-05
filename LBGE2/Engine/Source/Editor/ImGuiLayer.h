@@ -3,6 +3,8 @@
 
 #include "SFML/Graphics.hpp"
 #include "../Objects/LBGEObject.h"
+#include "ImGui/imgui.h"
+#include "ImGui/imfilebrowser.h"
 
 class ImGuiLayer
 {
@@ -17,11 +19,18 @@ public:
     void ProcessGui();
 
 private:
+    ImGui::FileBrowser fileDialog;
     std::string m_openedLevelFile;
 
     sf::RenderTexture* m_frameBuffer;
     LBGEObject* m_selectedObject;
     std::string m_selectedObjectName;
+
+    std::string m_contentRootPath;
+    std::filesystem::path m_currentFileBrowserDir;
+    sf::Texture m_contentBrowserFolderTexture;
+    sf::Texture m_contentBrowserFileTexture;
+    std::filesystem::path m_dragDropPathCurrent;
 
     void MainLayout();
     void MainMenuBar();
@@ -35,6 +44,9 @@ private:
     std::string m_componentName = "";
     std::string m_selectedComponentType = "";
     void CreateComponent();
+    
+    bool m_createObject = false;
+    void CreateObject();
 
 };
 

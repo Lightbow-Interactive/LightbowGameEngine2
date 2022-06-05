@@ -94,6 +94,7 @@ void Game::GameLoop()
         }
 
         m_level->UpdateLevel(elapsedSeconds);
+        //m_level->UpdateLevel(timeElapsed);
 
         m_level->RenderLevel(&m_window);
 
@@ -132,7 +133,11 @@ void Game::GameLoopEditor()
             if (m_editorGameRunning) m_level->HandleInput(&event);
         }
 
-        if (m_editorGameRunning) m_level->UpdateLevel(elapsedSeconds);
+        if (m_editorGameRunning)
+        {
+            m_level->UpdateLevel(elapsedSeconds);
+            m_level->UpdateLevel(timeElapsed);
+        }
         m_imGuiLayer.Update(m_window, timeElapsed);
 
         m_level->RenderLevel(&m_frameBuffer);

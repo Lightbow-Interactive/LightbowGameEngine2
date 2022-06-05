@@ -22,14 +22,21 @@ void Level::UpdateLevel(float deltaTime)
     m_manager.UpdateAll(deltaTime);
 }
 
+void Level::UpdateLevel(sf::Time time)
+{
+    if (m_map) m_map->Update(time);
+}
+
 void Level::RenderLevel(sf::RenderWindow *window)
 {
     m_state->Render(window);
+    if (m_map) m_map->Render(window);
     m_manager.RenderAll(window);
 }
 
 void Level::RenderLevel(sf::RenderTexture *rtexture)
 {
+    if (m_map) m_map->Render(rtexture);
     m_manager.RenderAll(rtexture);
 }
 
@@ -89,3 +96,9 @@ void Level::SaveCurrentLevelToFile(const std::string &filePath)
 
     Logger::Log("Level saved. (" + filePath + ")");
 }
+
+void Level::CreateObject(const std::string &name, LBGEObject *object)
+{
+    m_manager.Add(name, object);
+}
+

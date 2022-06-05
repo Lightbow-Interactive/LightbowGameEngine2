@@ -1,5 +1,6 @@
 #include "TextBlock.h"
 #include "Fonts.h"
+#include "../Core/Logger.h"
 
 TextBlock::TextBlock(sf::Font *font, int size) : LBGEObject("")
 {
@@ -25,4 +26,18 @@ void TextBlock::SetFont(const std::string &name)
     {
         m_text.setFont(*font);
     }
+}
+
+void TextBlock::SetFontByFile(const std::string &fontFile)
+{
+    if (!m_font.loadFromFile(fontFile))
+    {
+        Logger::Error("Could not load font");
+        return;
+    }
+
+    Logger::Log("Created font.");
+
+    m_text.setFont(m_font);
+    m_fontFile = fontFile;
 }

@@ -1,0 +1,28 @@
+{
+    "Name": "Player",
+    "TextureFile": "Resources/player.png",
+    "Location": {
+        "X": 100.0,
+        "Y": 200.0
+    },
+    "Rotation": 0.0,
+    "Scale": 1.0,
+    "Shader": {
+        "Vertex": "Resources/Shaders/myvertex.vert",
+        "Fragment": "Resources/Shaders/myfragment.frag"
+    },
+    "Components":[
+        {
+            "Name": "MyLuaComponent",
+            "Type": "LuaScriptComponent",
+            "Component": {
+                "LuaScript": "MyLuaFile.lua"
+            }
+        },
+        {
+            "Name": "MyCppComponent",
+            "Type": "CppScriptComponent",
+            "Component": {}
+        }
+    ]
+}

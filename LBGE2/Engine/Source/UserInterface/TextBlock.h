@@ -20,9 +20,13 @@ public:
     void SetFontSize(int val) { m_text.setCharacterSize(val); }
     const sf::Font* GetFont() { return m_text.getFont(); }
     void SetFont(const std::string& name);
+    const std::string* GetFontFile() { return &m_fontFile; }
+    void SetFontByFile(const std::string& fontFile);
 
 
 private:
+    std::string m_fontFile;
+    sf::Font m_font;
     sf::Text m_text;
 
 };

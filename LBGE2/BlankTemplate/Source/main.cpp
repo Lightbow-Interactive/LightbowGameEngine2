@@ -3,16 +3,16 @@
 
 int main()
 {
-    Game::FRAMERATE_LIMIT = 120;
+    Game::FRAMERATE_LIMIT = 60;
     Game::WINDOW_NAME = "LBGE2 - Blank Template";
     Game::SetStartupLevel(new MainLevel());
 
 
     // Start Normal Game:
-    //Game::Start();
+    Game::Start();
     
     // Start Editor:
-    Game::StartEditor();
+    //Game::StartEditor();
 
     return 0;
 }

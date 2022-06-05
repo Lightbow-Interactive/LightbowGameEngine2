@@ -3,7 +3,10 @@ project(PongTemplate)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(PongTemplate main.cpp Source/Levels/PongMenuLevel.cpp Source/Levels/PongMenuLevel.h Source/States/PongMenuState.cpp Source/States/PongMenuState.h Source/Levels/PongPlayingLevel.cpp Source/Levels/PongPlayingLevel.h Source/Objects/Player.cpp Source/Objects/Player.h Source/Objects/Ball.cpp Source/Objects/Ball.h)
+file(GLOB_RECURSE SOURCE_FILES 
+            ${PROJECT_SOURCE_DIR}/*.h 
+            ${PROJECT_SOURCE_DIR}/*.cpp)
+add_executable(PongTemplate ${SOURCE_FILES})
 
 set(LBGE_PATH ../Engine)
 

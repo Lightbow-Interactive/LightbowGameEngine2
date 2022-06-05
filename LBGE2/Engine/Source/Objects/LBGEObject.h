@@ -64,6 +64,7 @@ public:
     }
 
     const std::string* GetTextureFile() { return &m_textureFile; }
+    void SetTexture(const std::string& textureFile);
     Shader* GetShader() { return &m_shader; }
 
     virtual void OnCollidesWith(LBGEObject* other) {}

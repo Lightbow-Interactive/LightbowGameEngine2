@@ -126,3 +126,15 @@ void LBGEObject::RemoveComponent(const std::string &name)
         m_components.erase(found);
     }
 }
+
+
+void LBGEObject::SetTexture(const std::string &textureFile)
+{
+    if (!m_texture.loadFromFile(textureFile))
+    {
+        return;
+    }
+    
+    m_textureFile = textureFile;
+    m_sprite.setTexture(m_texture);
+}

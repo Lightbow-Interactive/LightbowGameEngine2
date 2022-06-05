@@ -1,5 +1,4 @@
 #include "ImGuiLayer.h"
-#include "ImGui/imgui.h"
 #include "ImGui/imgui-SFML.h"
 #include "ImGui/imgui_internal.h"
 #include <iostream>
@@ -10,23 +9,35 @@
 #include "../Objects/Components/DefaultComponents/CppScriptComponent.h"
 #include "../Objects/Components/DefaultComponents/LuaScriptComponent.h"
 #include "../Objects/Components/DefaultComponents/PhysicsComponent.h"
-#include "nativefiledialog/include/nfd.h"
 
 void ImGuiLayer::Init(sf::RenderWindow& window)
 {
     Logger::Log("Initializing editor...");
 
+    m_contentRootPath = "/Users/pascalgluth/Desktop/LightbowGameEngine2/LBGE2/PongTemplate/Resources";
+    m_currentFileBrowserDir = m_contentRootPath;
+    Logger::Log("Project content directory is " + m_contentRootPath);
+
+    if (!m_contentBrowserFileTexture.loadFromFile("Resources/Editor/file_icon.png") ||
+        !m_contentBrowserFolderTexture.loadFromFile("Resources/Editor/folder_icon.png"))
+    {
+        Logger::Error("Failed to load content browser icons");
+    }
+
     m_frameBuffer = Game::GetRenderFrameBuffer();
 
     //ImGui::SFML::Init(window);
-    ImGui::SFML::Init(window);
+    if (!ImGui::SFML::Init(window)) return;
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     ImGui::GetStyle().ScaleAllSizes(2);
 
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
     io.Fonts->AddFontFromFileTTF("Resources/Poppins-Regular.ttf", 30);
-    ImGui::SFML::UpdateFontTexture();
+    if (!ImGui::SFML::UpdateFontTexture()) return;
+
+    fileDialog.SetTitle("Select Level");
+    fileDialog.SetTypeFilters({".lbgelvl"});
 }
 
 void ImGuiLayer::ShutDown()
@@ -61,6 +72,7 @@ void ImGuiLayer::ProcessGui()
     ViewportWindow();
 
     if (m_createComponent) CreateComponent();
+    if (m_createObject) CreateObject();
 }
 
 void ImGuiLayer::MainLayout()
@@ -102,13 +114,13 @@ void ImGuiLayer::MainLayout()
 
             auto dock_id_center = dockspace_id;
             auto dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left,
-                                                            0.2f, nullptr,
+                                                            0.19f, nullptr,
                                                             &dockspace_id);
             auto dock_id_right = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right,
                                                              0.25f, nullptr,
                                                              &dockspace_id);
             auto dock_id_down = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down,
-                                                            0.2f, nullptr,
+                                                            0.25f, nullptr,
                                                             &dockspace_id);
 
             ImGui::DockBuilderDockWindow("Level", dock_id_left);
@@ -132,7 +144,9 @@ void ImGuiLayer::MainMenuBar()
             {
                 // todo: open
 
-                nfdchar_t* outPath = NULL;
+                fileDialog.Open();
+
+                /*nfdchar_t* outPath = NULL;
                 nfdresult_t result = NFD_OpenDialog("lbgelvl", NULL, &outPath);
 
                 if (result == NFD_OKAY)
@@ -153,7 +167,7 @@ void ImGuiLayer::MainMenuBar()
                 else
                 {
                     Logger::Log("Open Canceled");
-                }
+                }*/
             }
             if (ImGui::MenuItem("Save"))
             {
@@ -191,7 +205,7 @@ void ImGuiLayer::MainMenuBar()
             {
                 if (ImGui::MenuItem("LBGEObject"))
                 {
-                    // todo: create object
+                    m_createObject = true;
                 }
 
                 ImGui::EndMenu();
@@ -248,6 +262,25 @@ void ImGuiLayer::MainMenuBar()
         else ImGui::Text("Paused");
     }
     ImGui::EndMainMenuBar();
+
+    fileDialog.Display();
+
+    if (fileDialog.HasSelected())
+    {
+        m_openedLevelFile = fileDialog.GetSelected().string();
+        Logger::Log("Opening " + m_openedLevelFile + " ...");
+
+        Level* newLevel = Level::ConstructLevelFromFile(m_openedLevelFile);
+        if (newLevel) Game::ChangeLevel(newLevel);
+        else
+        {
+            m_openedLevelFile = "";
+            Game::ChangeLevel(new Level());
+            Logger::Error("Failed to load level.");
+        }
+
+        fileDialog.ClearSelected();
+    }
 }
 
 void ImGuiLayer::LevelWindow()
@@ -266,9 +299,7 @@ void ImGuiLayer::LevelWindow()
     std::map<std::string, LBGEObject*>* objectsInLevel = level->GetAllObjectsInLevel();
 
     ImGui::Indent();
-
-    int selected = 0;
-
+    
     auto itr = objectsInLevel->begin();
     while (itr != objectsInLevel->end())
     {
@@ -298,8 +329,68 @@ void ImGuiLayer::LogWindow()
 
 void ImGuiLayer::ContentWindow()
 {
-    ImGui::Begin("Content");
-    ImGui::Text("This is the content window");
+    ImGui::Begin("Content Browser");
+
+    //float columns = ImGui::GetWindowWidth()/200;
+
+    float padding = 512.f*10.f/150.f;
+    static float thumbnailSize = 150;
+    float itemSize = thumbnailSize + padding;
+
+    float panelWidth = ImGui::GetContentRegionAvail().x;
+    int columns = (int)(panelWidth / itemSize);
+
+    if (columns < 1)
+    {
+        ImGui::End();
+        return;
+    }
+
+    if (m_currentFileBrowserDir != std::filesystem::path(m_contentRootPath))
+    {
+        if (ImGui::Button("<-"))
+        {
+            m_currentFileBrowserDir = m_currentFileBrowserDir.parent_path();
+        }
+    }
+
+    ImGui::Columns(columns);
+
+    for (auto& dir : std::filesystem::directory_iterator(m_currentFileBrowserDir))
+    {
+        auto relativePath = std::filesystem::relative(dir.path().filename(), m_contentRootPath);
+        std::string filename = relativePath.filename().string();
+
+        if (dir.is_directory())
+            ImGui::ImageButton(m_contentBrowserFolderTexture,
+                               {thumbnailSize, thumbnailSize+thumbnailSize/10});
+        else
+            ImGui::ImageButton(m_contentBrowserFileTexture,
+                               {thumbnailSize, thumbnailSize+thumbnailSize/10});
+
+        if (dir.is_directory() && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+            m_currentFileBrowserDir /= dir.path().filename();
+
+        if (!dir.is_directory())
+        {
+            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+            {
+                m_dragDropPathCurrent = dir;
+                ImGui::SetDragDropPayload("file", &relativePath, sizeof(relativePath));
+                ImGui::EndDragDropSource();
+            }
+        }
+
+        ImGui::Text("%s", filename.c_str());
+
+        ImGui::NextColumn();
+    }
+
+    ImGui::Columns(1);
+
+    if (ImGui::SliderFloat("Size", &thumbnailSize, 64, 512))
+        padding = (512*10)/thumbnailSize;
+
     ImGui::End();
 }
 
@@ -317,6 +408,7 @@ void ImGuiLayer::ViewportWindow()
 void ImGuiLayer::PropertiesWindow()
 {
     ImGui::Begin("Properties");
+    
 
     if (m_selectedObject)
     {
@@ -374,10 +466,34 @@ void ImGuiLayer::PropertiesWindow()
 
             ImGui::TreePop();
         }
+        
+        if (ImGui::TreeNode("Sprite"))
+        {
+            ImGui::Text("Texture: ");
+            ImGui::SameLine();
+            ImGui::PushItemWidth(200);
+            char buff[255]{};
+            strcpy(buff, m_selectedObject->GetTextureFile()->c_str());
+            if (ImGui::InputText("##spriteTexture", buff, IM_ARRAYSIZE(buff)))
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (ImGui::AcceptDragDropPayload("file"))
+                {
+                    Logger::Log("Setting texture to: " + std::string(m_dragDropPathCurrent));
+                    m_selectedObject->SetTexture(m_dragDropPathCurrent.string());
+                    m_dragDropPathCurrent = std::filesystem::path();
+                }
+                ImGui::EndDragDropTarget();
+            }
+            ImGui::PopItemWidth();
+            
+            
+            ImGui::TreePop();
+        }
 
         if (dynamic_cast<TextBlock*>(m_selectedObject))
         {
-            TextBlock* textBlock = dynamic_cast<TextBlock*>(m_selectedObject);
+            auto* textBlock = dynamic_cast<TextBlock*>(m_selectedObject);
 
             if (ImGui::TreeNode("Text Options"))
             {
@@ -408,11 +524,18 @@ void ImGuiLayer::PropertiesWindow()
                 ImGui::Text("Font: ");
                 ImGui::SameLine();
                 ImGui::PushItemWidth(200);
+
                 char fontbuff[255]{};
-                strcpy(buff, Fonts::GetFontName(const_cast<sf::Font *>(textBlock->GetFont())).c_str());
-                if (ImGui::InputText("name", fontbuff, IM_ARRAYSIZE(fontbuff)))
+                strcpy(buff, textBlock->GetFontFile()->c_str());
+                ImGui::InputText("##fontDragDropFile", fontbuff, IM_ARRAYSIZE(fontbuff));
+                if (ImGui::BeginDragDropTarget())
                 {
-                    textBlock->SetFont(fontbuff);
+                    if (ImGui::AcceptDragDropPayload("file"))
+                    {
+                        textBlock->SetFontByFile(m_dragDropPathCurrent.string());
+                        m_dragDropPathCurrent = std::filesystem::path();
+                    }
+                    ImGui::EndDragDropTarget();
                 }
                 ImGui::PopItemWidth();
 
@@ -432,7 +555,7 @@ void ImGuiLayer::PropertiesWindow()
                     {
                         if (dynamic_cast<LuaScriptComponent*>(itr->second))
                         {
-                            LuaScriptComponent* luaScriptComponent = dynamic_cast<LuaScriptComponent*>(itr->second);
+                            auto* luaScriptComponent = dynamic_cast<LuaScriptComponent*>(itr->second);
 
                             ImGui::Text("Script: ");
                             ImGui::SameLine();
@@ -446,6 +569,14 @@ void ImGuiLayer::PropertiesWindow()
                             }
                             ImGui::PopItemWidth();
                         }
+                        
+                        if (dynamic_cast<PhysicsComponent*>(itr->second))
+                        {
+                            auto* physicsComponent = dynamic_cast<PhysicsComponent*>(itr->second);
+                            
+                            ImGui::Text("Physics Options...");
+                        }
+                        
                         ImGui::TreePop();
                     }
                     if (ImGui::BeginPopupContextItem("ComponentContextItem"))
@@ -490,8 +621,7 @@ void ImGuiLayer::CreateComponent()
         ImGui::Text("Type:   ");
         ImGui::SameLine();
 
-        const char* listbox_items[] = { "C++ Script", "Lua Script", "Physics Component" };
-        int listBoxCurrentSelection = -1;
+        const char* listbox_items[] = { "Lua Script", "Physics Component" };
         const char* selectedItem = "";
 
         if (!m_selectedComponentType.empty()) selectedItem = m_selectedComponentType.c_str();
@@ -502,10 +632,10 @@ void ImGuiLayer::CreateComponent()
 
         if (ImGui::BeginCombo("##comboComponent", selectedItem))
         {
-            for (int i = 0; i < IM_ARRAYSIZE(listbox_items); ++i)
+            for (auto & listbox_item : listbox_items)
             {
-                bool isSelected = (selectedItem == listbox_items[i]);
-                if (ImGui::Selectable(listbox_items[i], isSelected)) selectedItem = listbox_items[i];
+                bool isSelected = (selectedItem == listbox_item);
+                if (ImGui::Selectable(listbox_item, isSelected)) selectedItem = listbox_item;
                 if (isSelected) ImGui::SetItemDefaultFocus();
             }
             ImGui::EndCombo();
@@ -547,6 +677,48 @@ void ImGuiLayer::CreateComponent()
             m_componentName = "";
             m_createComponent = false;
         }
+    }
+    ImGui::End();
+}
+
+void ImGuiLayer::CreateObject()
+{
+    ImGui::Begin("Create LBGEObject");
+    {
+        ImGui::Text("Name: ");
+        ImGui::SameLine();
+        static char buffObjName[255]{};
+        ImGui::InputText("##newObjectName", buffObjName, IM_ARRAYSIZE(buffObjName));
+
+        ImGui::Text("Texture: ");
+        ImGui::SameLine();
+        static char buffTexName[255]{};
+        ImGui::InputText("##newObjectTexture", buffTexName, IM_ARRAYSIZE(buffTexName));
+        
+        if (ImGui::Button("Create"))
+        {
+            Level* level = Game::GetLevel();
+            if (!level)
+            {
+                ImGui::End();
+                return;
+            }
+            
+            Logger::Log("Creating new object " + std::string(buffObjName) + " texture " + std::string(buffTexName));
+            
+            LBGEObject* newobject = new LBGEObject(std::string(buffTexName));
+            level->CreateObject(std::string(buffObjName), newobject);
+            
+            m_createObject = false;
+        }
+        
+        ImGui::SameLine();
+        
+        if (ImGui::Button("Cancel"))
+        {
+            m_createObject = false;
+        }
+        
     }
     ImGui::End();
 }
